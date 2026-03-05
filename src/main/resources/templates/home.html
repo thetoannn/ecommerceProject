@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main}">
+
+<head>
+    <title layout:fragment="title">Trang chủ</title>
+    <link layout:fragment="pageStyles" rel="stylesheet" th:href="@{/user/css/style.css}">
+</head>
+
+<body>
+    <section layout:fragment="content" class="pb-5">
+        <div th:replace="~{layout/fragments/hero-slider :: hero}"></div>
+        <div th:replace="~{layout/fragments/features :: features}"></div>
+        <div th:replace="~{layout/fragments/welcome :: welcome}"></div>
+        <div th:replace="~{layout/fragments/categories :: categories}"></div>
+        <div th:replace="~{layout/fragments/new-arrivals :: newArrivals(${arrivals})}"></div>
+        <div th:replace="~{layout/fragments/best-sellers :: bestSellers(${bestSellers})}"></div>
+        <div th:replace="~{layout/fragments/newsletter :: newsletter}"></div>
+    </section>
+    <script layout:fragment="pageScripts" th:src="@{/user/js/main.js}"></script>
+</body>
+
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/main}">
+<head>
+    <title layout:fragment="title">Thêm Hãng điện thoại</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap">
+        <div>
+            <h3 class="font-weight-bold mb-1">Thêm Hãng điện thoại mới</h3>
+            <p class="text-muted mb-0">Nhập thông tin hãng điện thoại</p>
+        </div>
+        <a th:href="@{/admin/brands}" class="btn btn-outline-primary mt-3 mt-md-0">
+            <i class="ti-arrow-left mr-2"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-7 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Thông tin hãng</h4>
+                    <form th:action="@{/admin/brands}" th:object="${brandForm}" method="post">
+                        <div class="form-group">
+                            <label for="name">Tên hãng <span class="text-danger">*</span></label>
+                            <input id="name" type="text" class="form-control" th:field="*{name}" placeholder="Ví dụ: Apple, Samsung, Xiaomi">
+                            <div class="text-danger small" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-gradient-primary">
+                                <i class="ti-save mr-2"></i> Lưu hãng
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-3">Gợi ý</h4>
+                    <p class="text-muted">Hãng điện thoại giúp phân loại sản phẩm theo thương hiệu.</p>
+                    <ul class="list-unstyled">
+                        <li><i class="ti-check text-success mr-2"></i> Tên hãng ngắn gọn, dễ nhớ</li>
+                        <li><i class="ti-check text-success mr-2"></i> Ví dụ: Apple, Samsung, Xiaomi, Oppo, Vivo</li>
+                        <li><i class="ti-check text-success mr-2"></i> Tên hãng phải duy nhất</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
+

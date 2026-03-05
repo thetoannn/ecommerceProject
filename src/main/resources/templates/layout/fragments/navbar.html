@@ -1,0 +1,248 @@
+<div th:fragment="navbar">
+    <div class="preloader text-white fs-6 text-uppercase overflow-hidden"></div>
+
+    <div class="search-popup" id="searchPopup">
+        <div class="search-popup-container">
+            <form role="search" method="get" class="form-group" th:action="@{/products}">
+                <input type="search" id="search-form" class="form-control border-0 border-bottom"
+                    placeholder="Type and press enter" value="" name="q" />
+                <button type="submit" class="search-submit border-0 position-absolute bg-white"
+                    style="top: 15px;right: 15px;">
+                    <svg class="search" width="24" height="24">
+                        <use xlink:href="#search"></use>
+                    </svg>
+                </button>
+            </form>
+            <h5 class="cat-list-title">Browse Categories</h5>
+            <ul class="cat-list">
+                <li class="cat-list-item">
+                    <a th:href="@{/products}" title="All Products">All Products</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasNotifications"
+        aria-labelledby="Notifications" sec:authorize="isAuthenticated()">
+        <div class="offcanvas-header border-bottom">
+            <div>
+                <h5 class="offcanvas-title mb-1">Thông báo</h5>
+                <small class="text-muted" id="unreadCountText" style="display: none;">
+                    <span id="unreadCountValue">0</span> chưa đọc
+                </small>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-sm btn-outline-dark" id="markAllReadBtn">Đã đọc tất cả</button>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div id="notificationsList">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-secondary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center p-3 border-top">
+                <a th:href="@{/notifications}" class="btn btn-dark w-100">Xem tất cả thông báo</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasCart"
+        aria-labelledby="My Cart">
+        <div class="offcanvas-header justify-content-center">
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="order-md-last">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-primary">Your cart</span>
+                    <span class="badge bg-primary rounded-pill" id="cartBadge" th:text="${cartItemCount ?: 0}">0</span>
+                </h4>
+                <div id="cartContent">
+                    <div class="text-center py-4" id="cartLoading">
+                        <div class="spinner-border text-secondary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div id="cartItems"></div>
+                </div>
+                <div id="cartAction">
+                    <a th:href="@{/cart}" class="w-100 btn btn-outline-primary btn-lg" id="cartActionBtn">
+                        View Cart
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="top-bar" style="background: linear-gradient(135deg, #60a5fa, #3b82f6); height: 4px;"></div>
+
+    <nav class="navbar navbar-expand-lg text-white text-uppercase fs-7 ls-1 py-5 align-items-center">
+        <div class="container-fluid">
+            <div class="row align-items-center w-100">
+                <div class="col-8 col-md-3">
+                    <a class="navbar-brand" th:href="@{/}">
+                        <img th:src="@{/user/images/template/logo.svg}" width="204" height="46" alt="logo">
+                    </a>
+                    <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" style="color: white;">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+                <div class="col-1 col-md-6 d-md-flex justify-content-center">
+                    <ul class="navbar-nav d-none d-md-flex justify-content-center flex-grow-1 gap-1 gap-md-5">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" th:href="@{/}">HOME</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" th:href="@{/products}">PRODUCTS</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="dropdownCategories"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">CATEGORIES</a>
+                            <ul class="dropdown-menu list-unstyled p-4" aria-labelledby="dropdownCategories">
+                                <li th:each="category : ${categories}">
+                                    <a th:href="@{'/products?category=' + ${category.id}}"
+                                        class="dropdown-item item-anchor" th:text="${category.name}">Category</a>
+                                </li>
+                                <li th:if="${#lists.isEmpty(categories)}">
+                                    <span class="dropdown-item item-anchor text-muted">Chưa có danh mục</span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="offcanvas offcanvas-end bg-dark text-white d-md-none" tabindex="-1" id="offcanvasNavbar"
+                        aria-labelledby="offcanvasNavbarLabel">
+                        <div class="offcanvas-header">
+                            <h5 class="offcanvas-title text-white" id="offcanvasNavbarLabel">Menu</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <ul class="navbar-nav justify-content-center flex-grow-1 gap-1 gap-md-5">
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" th:href="@{/}">HOME</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" th:href="@{/products}">PRODUCTS</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-white" href="#"
+                                        id="dropdownCategoriesMobile" data-bs-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">CATEGORIES</a>
+                                    <ul class="dropdown-menu list-unstyled p-4"
+                                        aria-labelledby="dropdownCategoriesMobile">
+                                        <li th:each="category : ${categories}">
+                                            <a th:href="@{'/products?category=' + ${category.id}}"
+                                                class="dropdown-item item-anchor"
+                                                th:text="${category.name}">Category</a>
+                                        </li>
+                                        <li th:if="${#lists.isEmpty(categories)}">
+                                            <span class="dropdown-item item-anchor text-muted">Chưa có danh mục</span>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3 col-md-3 text-md-end">
+                    <ul class="list-unstyled d-flex justify-content-end align-items-center m-0">
+                        <li sec:authorize="isAuthenticated()" class="mx-2">
+                            <a class="text-white" style="text-decoration: none;">
+                                <svg width="24" height="24" viewBox="0 0 24 24">
+                                    <use xlink:href="#heart"></use>
+                                </svg>
+                            </a>
+                        </li>
+                        <li sec:authorize="isAuthenticated()" class="mx-2 position-relative">
+                            <a href="#" class="text-white notification-icon" data-bs-toggle="offcanvas"
+                                data-bs-target="#offcanvasNotifications" aria-controls="offcanvasNotifications"
+                                style="text-decoration: none; position: relative;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25-2.5 7-2.5 7h15s-2.5-1.75-2.5-7c0-3.87-3.13-7-7-7zm0 2c2.76 0 5 2.24 5 5 0 4.67 1.5 5.5 1.5 5.5h-13S7 13.67 7 9c0-2.76 2.24-5 5-5zm-1 15h2v2h-2v-2z" />
+                                </svg>
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge"
+                                    th:text="${notificationCount}" th:if="${notificationCount > 0}"
+                                    style="font-size: 0.65rem; padding: 0.25em 0.4em;">0</span>
+                            </a>
+                        </li>
+                        <li class="mx-2 position-relative">
+                            <a href="#" class="text-white cart-icon" data-bs-toggle="offcanvas"
+                                data-bs-target="#offcanvasCart" aria-controls="offcanvasCart"
+                                style="text-decoration: none; position: relative;">
+                                <svg width="24" height="24" viewBox="0 0 24 24">
+                                    <use xlink:href="#cart"></use>
+                                </svg>
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge"
+                                    th:text="${cartItemCount ?: 0}" th:if="${cartItemCount > 0}"
+                                    style="font-size: 0.65rem; padding: 0.25em 0.4em;">0</span>
+                            </a>
+                        </li>
+                        <li class="search-box mx-2">
+                            <a href="#search" class="search-button text-white"
+                                style="text-decoration: none; cursor: pointer;">
+                                <svg width="24" height="24" viewBox="0 0 24 24">
+                                    <use xlink:href="#search"></use>
+                                </svg>
+                            </a>
+                        </li>
+                        <li sec:authorize="!isAuthenticated()" class="mx-2">
+                            <a class="btn btn-outline-light rounded-pill px-4" th:href="@{/login}"
+                                style="border: 1px solid white; color: white; text-decoration: none;">Login</a>
+                        </li>
+                        <li sec:authorize="!isAuthenticated()" class="mx-2">
+                            <a class="btn btn-outline-light rounded-pill px-4" th:href="@{/register}"
+                                style="border: 1px solid white; color: white; text-decoration: none;">Register</a>
+                        </li>
+                        <li sec:authorize="isAuthenticated()" class="mx-2 dropdown">
+                            <a class="d-flex align-items-center text-white dropdown-toggle" href="#" id="userMenu"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                style="text-decoration: none; font-size: 0.85rem;">
+                                <span class="text-uppercase small text-muted me-2">Xin chào</span>
+                                <span class="fw-semibold"
+                                    th:text="${currentProfile?.fullName} ?: ${#authentication.name}">User</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end list-unstyled p-4 bg-dark text-white border-0 shadow"
+                                aria-labelledby="userMenu" style="min-width: auto; margin-top: 0.75rem;">
+                                <li>
+                                    <a class="dropdown-item item-anchor text-white" style="padding: 0.5rem 1rem;"
+                                        th:href="@{/profile}">Hồ sơ của tôi</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item item-anchor text-white" style="padding: 0.5rem 1rem;"
+                                        th:href="@{/orders}">Đơn hàng</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item item-anchor text-white d-flex justify-content-between align-items-center"
+                                        style="padding: 0.5rem 1rem;" th:href="@{/notifications}">
+                                        Thông báo
+                                        <span class="badge bg-danger rounded-pill ms-2" th:text="${notificationCount}"
+                                            th:if="${notificationCount > 0}">0</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider border-secondary">
+                                </li>
+                                <li>
+                                    <form th:action="@{/logout}" method="post">
+                                        <button type="submit" class="dropdown-item item-anchor text-danger"
+                                            style="background: transparent; border: none; padding: 0.5rem 1rem;">Đăng
+                                            xuất</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>

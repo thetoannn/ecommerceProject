@@ -1,0 +1,48 @@
+<section th:fragment="newArrivals(arrivals)" id="new-arrival" class="new-arrival py-5">
+    <div class="container-fluid">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
+            <h4 class="text-uppercase">Our New Arrivals</h4>
+            <a th:href="@{/products}" class="btn-link">View All Products</a>
+        </div>
+
+        <div data-aos="fade-in">
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5">
+                <div class="col" th:each="product, iterStat : ${arrivals}" th:if="${iterStat.index < 5}">
+                    <div class="product-item hover-effect-slide">
+                        <div class="image-holder position-relative"
+                            style="width: 100%; aspect-ratio: 3/4; overflow: hidden; background-color: #f3f4f6; border-radius: 0.5rem;">
+                            <a th:href="@{'/products/' + ${product.id}}"
+                                style="display: block; width: 100%; height: 100%;">
+                                <img th:src="${product.primaryImagePath != null and !#strings.isEmpty(product.primaryImagePath) ? product.primaryImagePath : '/user/images/template/product-small-' + (iterStat.index + 1) + '.jpg'}"
+                                    th:alt="${product.name}" class="product-image img-fluid"
+                                    style="width: 100%; height: 100%; object-fit: contain; object-position: center; padding: 0.5rem;"
+                                    th:onerror="|this.src='/user/images/template/product-small-' + ${iterStat.index + 1} + '.jpg'|">
+                            </a>
+                            <div sec:authorize="isAuthenticated()">
+                                <form th:action="@{'/cart/add/' + ${product.id}}" method="post" class="d-grid mt-2">
+                                    <button class="btn btn-primary w-100 mt-2 rounded-1" type="submit">Add to
+                                        cart</button>
+                                </form>
+                            </div>
+                            <div sec:authorize="!isAuthenticated()" class="d-grid mt-2">
+                                <a th:href="@{/login}" class="btn btn-outline-primary w-100 mt-2 rounded-1">Login to
+                                    buy</a>
+                            </div>
+                        </div>
+                        <div
+                            class="product-content d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                            <h5 class="fs-5 mt-3">
+                                <a th:href="@{'/products/' + ${product.id}}" th:text="${product.name}">Product name</a>
+                            </h5>
+                            <span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0
+                                ₫</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col" th:if="${#lists.isEmpty(arrivals)}">
+                    <div class="alert alert-light border-0 text-center mb-0">No new arrivals available.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

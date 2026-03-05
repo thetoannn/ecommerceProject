@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main}">
+
+<head>
+    <title layout:fragment="title">Địa chỉ giao hàng - Hồ sơ của tôi</title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <!-- Header -->
+        <section class="py-5">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="page-title pb-2">Địa chỉ giao hàng</h1>
+                    <nav class="breadcrumb fs-6">
+                        <a class="breadcrumb-item nav-link" th:href="@{/}">Home</a>
+                        <a class="breadcrumb-item nav-link" th:href="@{/profile}">Hồ sơ</a>
+                        <span class="breadcrumb-item active" aria-current="page">Địa chỉ giao hàng</span>
+                    </nav>
+                </div>
+            </div>
+        </section>
+
+        <section class="pb-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div th:if="${successMessage}" class="alert alert-success py-2 px-3 small mb-4" role="alert"
+                            th:text="${successMessage}"></div>
+                        <div th:if="${errorMessage}" class="alert alert-danger py-2 px-3 small mb-4" role="alert"
+                            th:text="${errorMessage}"></div>
+
+                        <div class="d-flex justify-content-end mb-4">
+                            <a th:href="@{/address/create}" class="btn btn-dark d-flex align-items-center gap-2">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                <span>Thêm địa chỉ mới</span>
+                            </a>
+                        </div>
+
+                        <div class="row">
+                            <div th:if="${#lists.isEmpty(addresses)}" class="col-12 text-center py-5">
+                                <div class="mb-3 text-muted">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1" class="mb-3">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                    <p>Bạn chưa có địa chỉ giao hàng nào.</p>
+                                </div>
+                                <a th:href="@{/address/create}" class="btn btn-outline-dark">Thêm ngay</a>
+                            </div>
+
+                            <div th:each="addr : ${addresses}" class="col-md-6 mb-4">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <h5 class="card-title mb-0 fw-bold" th:text="${addr.recipientName}">Tên
+                                                người nhận</h5>
+                                            <span th:if="${addr.id == currentProfile?.id}" class="badge bg-dark">Mặc
+                                                định</span>
+                                        </div>
+                                        <div class="card-text small text-muted mb-4">
+                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <path
+                                                        d="M22 16.92v3c0 .81-.71 1.55-1.54 1.55l-3.12-.4a17 17 0 0 1-7.71-4.59 17 17 0 0 1-4.59-7.71l-.4-3.12A1.55 1.55 0 0 1 3.54 3.12l3.12.4c.82.1 1.47.73 1.62 1.54l.57 3.3a1.53 1.53 0 0 1-.36 1.43l-1.91 1.91a13 13 0 0 0 5.44 5.44l1.91-1.91a1.53 1.53 0 0 1 1.43-.36l3.3.57a1.55 1.55 0 0 1 1.54 1.62v3.12z">
+                                                    </path>
+                                                </svg>
+                                                <span th:text="${addr.phone}">0123456789</span>
+                                            </div>
+                                            <div class="d-flex align-items-start gap-2">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2" class="mt-1">
+                                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                                    <circle cx="12" cy="10" r="3"></circle>
+                                                </svg>
+                                                <span>
+                                                    <span th:text="${addr.addressLine}">123 Đường ABC</span>,
+                                                    <span th:text="${addr.city}">Hà Nội</span>,
+                                                    <span th:text="${addr.country}">Việt Nam</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <a th:href="@{/address/edit/{addressId}(addressId=${addr.id})}"
+                                                class="btn btn-sm btn-outline-dark px-3 mt-auto">Sửa</a>
+                                            <form th:action="@{/address/delete/{addressId}(addressId=${addr.id})}"
+                                                method="post"
+                                                onsubmit="return confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')">
+                                                <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger px-3">Xóa</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+</body>
+
+</html>

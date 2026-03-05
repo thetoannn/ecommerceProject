@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title layout:title-pattern="$CONTENT_TITLE · Skydash Admin">Skydash Admin</title>
+
+    <link rel="stylesheet" th:href="@{/admin/vendors/feather/feather.css}">
+    <link rel="stylesheet" th:href="@{/admin/vendors/ti-icons/css/themify-icons.css}">
+    <link rel="stylesheet" th:href="@{/admin/vendors/css/vendor.bundle.base.css}">
+    <link rel="stylesheet" th:href="@{/admin/css/vertical-layout-light/style.css}">
+    <link rel="stylesheet" th:href="@{/admin/css/custom.css}">
+    <th:block layout:fragment="pageStyles" />
+</head>
+
+<body>
+    <div class="container-scroller">
+        <div th:replace="~{admin/layout/fragments/header :: navbar}"></div>
+        <div class="container-fluid page-body-wrapper">
+            <div th:replace="~{admin/layout/fragments/settings :: settings}"></div>
+            <div th:replace="~{admin/layout/fragments/sidebar :: sidebar}"></div>
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <section layout:fragment="content">
+                        <!-- Page content -->
+                    </section>
+                </div>
+                <div th:replace="~{admin/layout/fragments/footer :: footer}"></div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/admin/vendors/js/vendor.bundle.base.js}"></script>
+    <script th:src="@{/admin/vendors/chart.js/Chart.min.js}"></script>
+    <script th:src="@{/admin/js/off-canvas.js}"></script>
+    <script th:src="@{/admin/js/hoverable-collapse.js}"></script>
+    <script th:src="@{/admin/js/template.js}"></script>
+    <script th:src="@{/admin/js/settings.js}"></script>
+    <script th:src="@{/admin/js/todolist.js}"></script>
+    <script th:src="@{/admin/js/dashboard.js}"></script>
+    <script th:src="@{/admin/js/custom.js}"></script>
+    <script th:src="@{/admin/js/notifications.js}"></script>
+    <th:block layout:fragment="pageScripts" />
+</body>
+
+</html>

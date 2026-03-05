@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{admin/layout/main}">
+
+<head>
+    <title layout:fragment="title" th:text="${isEdit ? 'Chỉnh sửa giá trị' : 'Thêm giá trị'}">Giá trị</title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <div class="mb-3">
+            <h3 class="font-weight-bold mb-1" th:text="${isEdit ? 'Chỉnh sửa giá trị thuộc tính' : 'Thêm giá trị mới'}">
+                Giá trị</h3>
+            <p class="text-muted mb-0">Ví dụ: Blue, Red, 128GB, 256GB, 8GB...</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form th:object="${attributeValue}"
+                            th:action="${isEdit} ? @{/admin/attribute-values/{id}/edit(id=*{id})} : @{/admin/attribute-values/new}"
+                            method="post">
+                            <input type="hidden" th:field="*{id}">
+
+                            <div class="form-group">
+                                <label for="attributeSelect">Thuộc tính <span class="text-danger">*</span></label>
+                                <select class="form-control" id="attributeSelect" th:field="*{attribute.id}" required>
+                                    <option value="">-- Chọn thuộc tính --</option>
+                                    <option th:each="attr : ${attributes}" th:value="${attr.id}" th:text="${attr.name}">
+                                    </option>
+                                </select>
+                                <small class="form-text text-muted">
+                                    Chọn thuộc tính mà giá trị này thuộc về
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="attributeValue">Giá trị <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="attributeValue" th:field="*{value}"
+                                    placeholder="Ví dụ: Blue, 128GB, 8GB..." required>
+                                <small class="form-text text-muted">
+                                    Giá trị cụ thể của thuộc tính
+                                </small>
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <button type="submit" class="btn btn-primary mr-2">
+                                    <i class="ti-save mr-2"></i>
+                                    <span th:text="${isEdit ? 'Cập nhật' : 'Tạo giá trị'}">Lưu</span>
+                                </button>
+                                <a th:href="@{/admin/attribute-values(attributeId=${attributeValue.attribute?.id})}"
+                                    class="btn btn-light">
+                                    <i class="ti-close mr-2"></i> Hủy
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title">Hướng dẫn</h6>
+                        <ul class="small mb-0">
+                            <li>Mỗi giá trị thuộc về một thuộc tính cụ thể</li>
+                            <li>Ví dụ: Thuộc tính "Color" có giá trị "Blue", "Red", "Black"</li>
+                            <li>Sau khi tạo giá trị, bạn có thể gán chúng cho sản phẩm</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

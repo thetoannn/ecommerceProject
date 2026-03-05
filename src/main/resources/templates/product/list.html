@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main}">
+
+<head>
+    <title layout:fragment="title">Products</title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <section class="mt-5 pt-5">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="text-uppercase fs-3">Shop</h1>
+                    <nav class="breadcrumb">
+                        <a class="breadcrumb-item" th:href="@{/}">Home</a>
+                        <a class="breadcrumb-item" href="#">Pages</a>
+                        <span class="breadcrumb-item active" aria-current="page">Shop</span>
+                    </nav>
+                </div>
+            </div>
+        </section>
+
+        <main class="main-content">
+            <section class="shopify-element py-5">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between py-1">
+                    </div>
+                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5" th:if="${!#lists.isEmpty(products)}">
+                        <div class="col" th:each="p : ${products}">
+                            <div class="product-item hover-effect-slide">
+                                <div class="image-holder position-relative">
+                                    <div class="ratio" style="--bs-aspect-ratio: 116.87%;">
+                                        <a th:href="@{'/products/' + ${p.id}}" class="d-block w-100 h-100">
+                                            <img th:src="${p.primaryImagePath != null and !#strings.isEmpty(p.primaryImagePath) ? p.primaryImagePath : '/user/images/template/product-thumbnail-1.jpg'}"
+                                                th:alt="${p.name}" class="product-image img-fluid w-100 h-100"
+                                                style="object-fit: cover;"
+                                                onerror="this.src='/user/images/template/product-thumbnail-1.jpg'">
+                                        </a>
+                                    </div>
+                                    <div sec:authorize="isAuthenticated()">
+                                        <form th:action="@{'/cart/add/' + ${p.id}}" method="post" class="mt-2">
+                                            <button class="btn btn-primary w-100 mt-2 rounded-1" type="submit">Add to
+                                                cart</button>
+                                        </form>
+                                    </div>
+                                    <div sec:authorize="!isAuthenticated()" class="mt-2">
+                                        <a th:href="@{/login}"
+                                            class="btn btn-outline-primary w-100 mt-2 rounded-1">Login to buy</a>
+                                    </div>
+                                </div>
+                                <div class="product-content">
+                                    <h5 class="mt-3">
+                                        <a th:href="@{'/products/' + ${p.id}}" th:text="${p.name}">Product Name</a>
+                                    </h5>
+                                    <span class="text-secondary"
+                                        th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0
+                                        ₫</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12" th:if="${#lists.isEmpty(products)}">
+                        <div class="alert alert-info">No products found.</div>
+                    </div>
+                    <nav aria-label="Page navigation" class="d-flex justify-content-center mt-5"
+                        th:if="${productPage.totalPages > 1}">
+                        <ul class="pagination">
+                            <li class="page-item" th:if="${!productPage.first}">
+                                <a class="page-link border-0 bg-transparent"
+                                    th:href="@{/products(page=${productPage.number - 1}, size=${productPage.size}, q=${q})}"
+                                    aria-label="Previous">
+                                    <i class="icon icon-arrow-left me-1"></i>Previous
+                                </a>
+                            </li>
+
+                            <li th:each="pageNum : ${#numbers.sequence(0, productPage.totalPages - 1)}"
+                                class="page-item" th:classappend="${pageNum == productPage.number} ? 'active'">
+                                <a class="page-link border-0 bg-transparent"
+                                    th:href="@{/products(page=${pageNum}, size=${productPage.size}, q=${q})}"
+                                    th:text="${pageNum + 1}">1</a>
+                            </li>
+
+                            <li class="page-item" th:if="${!productPage.last}">
+                                <a class="page-link border-0 bg-transparent"
+                                    th:href="@{/products(page=${productPage.number + 1}, size=${productPage.size}, q=${q})}"
+                                    aria-label="Next">
+                                    Next<i class="icon icon-arrow-right ms-1"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </section>
+        </main>
+    </section>
+</body>
+
+</html>

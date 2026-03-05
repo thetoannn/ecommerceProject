@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{admin/layout/main}">
+
+<head>
+    <title layout:fragment="title">Quản lý thuộc tính</title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <div class="mb-3">
+            <h3 class="font-weight-bold mb-1">Quản lý thuộc tính sản phẩm</h3>
+            <p class="text-muted mb-0">Quản lý các thuộc tính như Color, Storage, RAM, Size...</p>
+        </div>
+
+        <div th:if="${success != null}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${success}"></span>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        <div th:if="${error != null}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div></div>
+            <a th:href="@{/admin/attributes/new}" class="btn btn-success">
+                <i class="ti-plus mr-2"></i> Thêm thông số
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title mb-3">
+                    Danh sách thông số
+                </p>
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên thông số</th>
+                                <th>Số giá trị</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(attributes)}">
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    Chưa có thuộc tính nào
+                                </td>
+                            </tr>
+                            <tr th:each="attr : ${attributes}">
+                                <td th:text="${attr.id}">1</td>
+                                <td>
+                                    <strong th:text="${attr.name}">Color</strong>
+                                </td>
+                                <td>
+                                    <a th:href="@{/admin/attribute-values(attributeId=${attr.id})}"
+                                        class="badge badge-info">
+                                        <span th:text="${attr.values != null ? #lists.size(attr.values) : 0}">0</span>
+                                        giá trị
+                                    </a>
+                                </td>
+                                <td class="text-nowrap">
+                                    <a th:href="@{/admin/attribute-values(attributeId=${attr.id})}"
+                                        class="btn btn-sm btn-outline-info mr-2">
+                                        <i class="ti-list"></i> Chi tiết
+                                    </a>
+                                    <a th:href="@{/admin/attributes/{id}/edit(id=${attr.id})}"
+                                        class="btn btn-sm btn-outline-primary mr-2">
+                                        <i class="ti-pencil"></i> Sửa
+                                    </a>
+                                    <form th:action="@{/admin/attributes/{id}/delete(id=${attr.id})}" method="post"
+                                        style="display: inline;"
+                                        onsubmit="return confirm('Xóa thuộc tính này sẽ xóa tất cả giá trị và liên kết với sản phẩm. Bạn có chắc chắn?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="ti-trash"></i> Xóa
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

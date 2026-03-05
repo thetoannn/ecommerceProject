@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main}">
+
+<head>
+    <title layout:fragment="title">Đơn hàng của tôi</title>
+</head>
+
+<body>
+    <section layout:fragment="content" class="my-orders-page">
+        <!-- Header -->
+        <section class="py-5">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="page-title pb-2">Đơn hàng của tôi</h1>
+                    <nav class="breadcrumb fs-6">
+                        <a class="breadcrumb-item nav-link" th:href="@{/}">Home</a>
+                        <span class="breadcrumb-item active" aria-current="page">Đơn hàng</span>
+                    </nav>
+                </div>
+            </div>
+        </section>
+
+        <!-- Orders Content -->
+        <section class="orders-wrap pb-5">
+            <div class="container">
+                <!-- Empty State -->
+                <div th:if="${#lists.isEmpty(orders)}" class="text-center py-5">
+                    <p class="text-muted mb-3">Bạn chưa có đơn hàng nào.</p>
+                    <a th:href="@{/products}" class="btn btn-dark btn-lg text-uppercase">Mua sắm ngay</a>
+                </div>
+
+                <!-- Orders Table -->
+                <div th:if="${!#lists.isEmpty(orders)}" class="order-items">
+                    <table class="table">
+                        <thead class="border-bottom">
+                            <tr>
+                                <th>STT</th>
+                                <th>Sản phẩm</th>
+                                <th>Ngày đặt</th>
+                                <th>Trạng thái</th>
+                                <th class="text-end">Tổng tiền</th>
+                                <th class="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="order, rowStat : ${orders}" class="border-bottom">
+                                <td th:text="${rowStat.count}">1</td>
+                                <td>
+                                    <span th:if="${!order.items.isEmpty()}" th:text="${order.items[0].productName}">Sản
+                                        phẩm</span>
+                                    <small th:if="${order.items.size() > 1}" class="text-muted d-block"
+                                        th:text="'+' + ${order.items.size() - 1} + ' sản phẩm khác'">+1 sản phẩm
+                                        khác</small>
+                                    <span th:if="${order.items.isEmpty()}" class="text-muted">-</span>
+                                </td>
+                                <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00
+                                </td>
+                                <td>
+                                    <span class="badge"
+                                        th:classappend="${order.status.name() == 'PROCESSING'} ? 'bg-info text-dark' :
+                                                      (${order.status.name() == 'SHIPPED'} ? 'bg-primary' :
+                                                      (${order.status.name() == 'DELIVERED'} ? 'bg-success' :
+                                                      (${order.status.name() == 'CANCELLED'} ? 'bg-danger' : 'bg-secondary')))"
+                                        th:text="${order.status.displayName}">Đang xử lý</span>
+                                </td>
+                                <td class="text-end"
+                                    th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                                    0 ₫
+                                </td>
+                                <td class="text-center">
+                                    <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-dark">
+                                        Xem chi tiết
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </section>
+</body>
+
+</html>

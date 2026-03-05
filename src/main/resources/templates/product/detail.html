@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main}">
+
+<head>
+    <title layout:fragment="title" th:text="${product != null ? product.name : 'Product'}">Product</title>
+    <style>
+        .product-thumbnail-slider {
+            height: 600px;
+        }
+
+        .product-thumbnail-slider .swiper-slide {
+            width: 100% !important;
+            height: 115px !important;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            cursor: pointer;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-thumbnail-slider .thumb-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-thumbnail-slider .swiper-slide-thumb-active {
+            border: 2px solid var(--bs-primary, #FF496A);
+        }
+
+
+        .product-large-slider {
+            width: 100%;
+            height: 600px;
+            /* Chiều cao cố định */
+            background-color: transparent;
+            /* Loại bỏ nền trắng */
+            border: none;
+            /* Loại bỏ viền */
+        }
+
+        .product-large-slider .swiper-slide {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            /* Loại bỏ nền trắng */
+            opacity: 0 !important;
+            /* Mặc định ẩn tất cả */
+            pointer-events: none;
+            /* Không cho tương tác với slide không active */
+        }
+
+        .product-large-slider .swiper-slide-active {
+            opacity: 1 !important;
+            /* Chỉ hiển thị slide active */
+            pointer-events: auto;
+            /* Cho phép tương tác với slide active */
+        }
+
+        .product-large-slider .image-zoom {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-large-slider img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            /* HIỆN FULL ẢNH, không bị cắt */
+        }
+
+        /* Hiệu ứng Zoom */
+        .image-zoom .photo {
+            background-size: contain !important;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* Pagination - Đảm bảo hiển thị và cập nhật đúng */
+        .product-large-slider .swiper-pagination {
+            position: relative !important;
+            margin-top: 20px;
+            text-align: center;
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            z-index: 10;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .product-large-slider .swiper-pagination-bullet {
+            width: 12px;
+            height: 12px;
+            margin: 0 5px;
+            background: rgba(0, 0, 0, 0.3);
+            opacity: 1 !important;
+            transition: all 0.3s;
+            display: inline-block !important;
+            cursor: pointer;
+        }
+
+        .product-large-slider .swiper-pagination-bullet-active {
+            background: var(--bs-primary, #FF496A) !important;
+            opacity: 1 !important;
+            transform: scale(1.2);
+        }
+
+        @media (max-width: 991px) {
+            .product-thumbnail-slider {
+                height: auto;
+            }
+
+            .product-large-slider {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main layout:fragment="content" class="main-content mt-5 py-5" th:if="${product}">
+        <div class="container">
+            <nav class="breadcrumb mt-5">
+                <a class="breadcrumb-item" th:href="@{/}">Home</a>
+                <a class="breadcrumb-item" th:href="@{/products}">Pages</a>
+                <span class="breadcrumb-item active" aria-current="page" th:text="${product.name}">Shop</span>
+            </nav>
+        </div>
+
+        <section id="product-detail" class="single-product">
+            <div class="container">
+                <div class="row g-5">
+                    <div class="col-md-8">
+                        <div class="row flex-column-reverse flex-lg-row">
+                            <div class="col-md-12 col-lg-2">
+                                <!-- product-thumbnail-slider -->
+                                <div class="swiper product-thumbnail-slider vertical" data-num="5"
+                                    data-direction="vertical">
+                                    <div class="swiper-wrapper"
+                                        th:if="${productImages != null && !productImages.isEmpty()}">
+                                        <div class="swiper-slide" th:each="img : ${productImages}">
+                                            <img th:src="${img.url}" alt="thumb-image" class="thumb-image img-fluid">
+                                        </div>
+                                    </div>
+                                    <div class="swiper-wrapper"
+                                        th:if="${productImages == null || productImages.isEmpty()}">
+                                        <div class="swiper-slide">
+                                            <img th:src="${product.primaryImagePath != null ? product.primaryImagePath : '/user/images/template/product-thumbnail-1.jpg'}"
+                                                alt="thumb-image" class="thumb-image img-fluid">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="/user/images/template/product-thumbnail-2.jpg" alt="thumb-image"
+                                                class="thumb-image img-fluid">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="/user/images/template/product-thumbnail-3.jpg" alt="thumb-image"
+                                                class="thumb-image img-fluid">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="/user/images/template/product-thumbnail-4.jpg" alt="thumb-image"
+                                                class="thumb-image img-fluid">
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img src="/user/images/template/product-thumbnail-5.jpg" alt="thumb-image"
+                                                class="thumb-image img-fluid">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-10">
+                                <!-- product-large-slider -->
+                                <div class="swiper product-large-slider swiper-fade">
+                                    <div class="swiper-wrapper"
+                                        th:if="${productImages != null && !productImages.isEmpty()}">
+                                        <div class="swiper-slide" th:each="img : ${productImages}">
+                                            <div class="image-zoom" data-scale="2.5" th:attr="data-image=${img.url}">
+                                                <img th:src="${img.url}" alt="product-large" class="img-fluid">
+                                                <div class="photo" th:style="|background-image: url('${img.url}');|">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="swiper-wrapper"
+                                        th:if="${productImages == null || productImages.isEmpty()}">
+                                        <div class="swiper-slide">
+                                            <div class="image-zoom" data-scale="2.5"
+                                                th:data-image="${product.primaryImagePath != null ? product.primaryImagePath : '/user/images/template/product-thumbnail-1.jpg'}">
+                                                <img th:src="${product.primaryImagePath != null ? product.primaryImagePath : '/user/images/template/product-thumbnail-1.jpg'}"
+                                                    alt="product-large" class="img-fluid">
+                                                <div class="photo"
+                                                    th:style="'background-image: url(' + ${product.primaryImagePath != null ? product.primaryImagePath : '/user/images/template/product-thumbnail-1.jpg'} + ');'">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="image-zoom" data-scale="2.5"
+                                                data-image="/user/images/template/product-thumbnail-2.jpg">
+                                                <img src="/user/images/template/product-thumbnail-2.jpg"
+                                                    alt="product-large" class="img-fluid">
+                                                <div class="photo"
+                                                    style="background-image: url('/user/images/template/product-thumbnail-2.jpg');">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="image-zoom" data-scale="2.5"
+                                                data-image="/user/images/template/product-thumbnail-3.jpg">
+                                                <img src="/user/images/template/product-thumbnail-3.jpg"
+                                                    alt="product-large" class="img-fluid">
+                                                <div class="photo"
+                                                    style="background-image: url('/user/images/template/product-thumbnail-3.jpg');">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="image-zoom" data-scale="2.5"
+                                                data-image="/user/images/template/product-thumbnail-4.jpg">
+                                                <img src="/user/images/template/product-thumbnail-4.jpg"
+                                                    alt="product-large" class="img-fluid">
+                                                <div class="photo"
+                                                    style="background-image: url('/user/images/template/product-thumbnail-4.jpg');">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="image-zoom" data-scale="2.5"
+                                                data-image="/user/images/template/product-thumbnail-5.jpg">
+                                                <img src="/user/images/template/product-thumbnail-5.jpg"
+                                                    alt="product-large" class="img-fluid">
+                                                <div class="photo"
+                                                    style="background-image: url('/user/images/template/product-thumbnail-5.jpg');">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="swiper-pagination swiper-pagination-clickable swiper-pagination-bullets swiper-pagination-horizontal">
+                                    </div>
+                                </div>
+                                <!-- / product-large-slider -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="product-info">
+                            <div class="element-header">
+                                <h2 itemprop="name" class="display-4" th:text="${product.name}">Product Name</h2>
+                                <div class="rating-container d-flex align-items-center">
+                                    <!--                                <svg width="32" height="32">-->
+                                    <!--                                    <use xlink:href="#star-solid"></use>-->
+                                    <!--                                </svg>-->
+                                    <!--                                <svg width="32" height="32">-->
+                                    <!--                                    <use xlink:href="#star-solid"></use>-->
+                                    <!--                                </svg>-->
+                                    <!--                                <svg width="32" height="32">-->
+                                    <!--                                    <use xlink:href="#star-solid"></use>-->
+                                    <!--                                </svg>-->
+                                    <!--                                <svg width="32" height="32">-->
+                                    <!--                                    <use xlink:href="#star-outline"></use>-->
+                                    <!--                                </svg>-->
+                                    <!--                                <svg width="32" height="32">-->
+                                    <!--                                    <use xlink:href="#star-outline"></use>-->
+                                    <!--                                </svg>-->
+                                    <!--                                <span class="rating-count">(3.5)</span>-->
+                                </div>
+                            </div>
+                            <div class="product-price">
+                                <span class="fs-2"
+                                    th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0
+                                    ₫</span>
+                            </div>
+                            <p
+                                th:text="${product.description != null ? product.description : 'Tristique ullamcorper nunc egestas non. Justo, cum feugiat imperdiet nulla molestie ac vulputate scelerisque amet. Bibendum adipiscing platea blandit sit sed quam semper rhoncus. Diam ultrices maecenas consequat eu tortor. Orci, cras lectus mauris, cras egestas quam venenatis neque.'}">
+                                Tristique ullamcorper nunc egestas non. Justo, cum feugiat imperdiet nulla molestie ac
+                                vulputate scelerisque amet.
+                            </p>
+                            <div class="product-attributes mt-4" th:if="${attributes != null && !attributes.isEmpty()}">
+                                <!-- Color Selection -->
+                                <div th:if="${colorOptions != null && !#lists.isEmpty(colorOptions)}"
+                                    class="color-product-options mb-3">
+                                    <div class="color-toggle" data-option-index="0">
+                                        <div class="item-title">
+                                            Color:
+                                            <span id="selectedColorText"></span>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <div th:each="c, iter : ${colorOptions}" class="color-item"
+                                                th:data-color="${c.colorName}" th:data-image="${c.imagePath}"
+                                                th:classappend="${iter.index == 0} ? ' active'"
+                                                th:title="${c.colorName}">
+
+                                                <span class="color-inner"
+                                                    th:style="'background-color:' + ${c.colorHex}">
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <input type="hidden" name="color" id="selectedColor">
+
+                                    </div>
+                                </div>
+
+                                <!-- Other Attributes (Storage, RAM, etc.) -->
+                                <div th:each="attr : ${attributes}" th:if="${attr.key != 'Color'}" class="mb-3">
+                                    <div class="item-title" th:text="${attr.key + ':'}">Attribute:</div>
+                                    <div class="attribute-value" th:text="${attr.value}">Value</div>
+                                </div>
+                            </div>
+                            <div class="product-action mt-4">
+                                <div class="item-title mb-2">
+                                    <span class="fw-bold"
+                                        th:text="${product.stock != null ? (product.stock + ' in stock') : 'In stock'}">3
+                                        in stock</span>
+                                </div>
+                                <div class="product-quantity">
+                                    <div class="d-flex flex-wrap gap-3 align-items-start">
+                                        <div sec:authorize="isAuthenticated()">
+                                            <form id="addToCartForm" th:action="@{'/cart/add/' + ${product.id}}"
+                                                method="post" class="m-0">
+                                                <div class="d-flex gap-3 align-items-stretch">
+                                                    <div class="input-group product-qty d-flex align-items-stretch"
+                                                        style="max-width: 150px;">
+                                                        <span class="input-group-btn d-flex align-items-stretch">
+                                                            <button type="button"
+                                                                class="quantity-left-minus btn btn-light btn-number d-flex align-items-center"
+                                                                data-type="minus">
+                                                                <svg width="16" height="16">
+                                                                    <use xlink:href="#minus"></use>
+                                                                </svg>
+                                                            </button>
+                                                        </span>
+                                                        <input type="number" id="quantity" name="qty"
+                                                            class="form-control input-number text-center" value="1"
+                                                            min="1"
+                                                            th:max="${product.stock != null ? product.stock : 100}"
+                                                            style="height: 48px; min-width: 60px;">
+                                                        <span class="input-group-btn d-flex align-items-stretch">
+                                                            <button type="button"
+                                                                class="quantity-right-plus btn btn-light btn-number d-flex align-items-center"
+                                                                data-type="plus">
+                                                                <svg width="16" height="16">
+                                                                    <use xlink:href="#plus"></use>
+                                                                </svg>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                    <button type="submit" name="add" id="add-to-cart-btn"
+                                                        class="btn btn-dark product-cart-submit text-uppercase px-4"
+                                                        style="height: 48px;">
+                                                        <span>Add to cart</span>
+                                                    </button>
+                                                </div>
+                                                <div id="quantity-error" class="text-danger small mt-1"
+                                                    style="display: none; position: absolute;">
+                                                    Số lượng vượt quá hàng trong kho!
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div sec:authorize="!isAuthenticated()">
+                                            <a th:href="@{/login}"
+                                                class="btn btn-dark text-uppercase px-5 d-flex align-items-center justify-content-center"
+                                                style="height: 48px;">
+                                                Login to add to cart
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="cate-links d-flex flex-column mt-4 w-100">
+                                    <div class="social-links d-flex align-items-center gap-2 mb-3">
+                                        <div>Share:</div>
+                                        <ul class="list-unstyled d-flex gap-2 m-0 lh-1">
+                                            <li>
+                                                <a href="#" class="text-secondary p-0">
+                                                    <svg width="18" height="18">
+                                                        <use xlink:href="#facebook"></use>
+                                                    </svg>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="text-secondary p-0">
+                                                    <svg width="18" height="18">
+                                                        <use xlink:href="#twitter"></use>
+                                                    </svg>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="text-secondary p-0">
+                                                    <svg width="18" height="18">
+                                                        <use xlink:href="#youtube"></use>
+                                                    </svg>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="text-secondary p-0">
+                                                    <svg width="18" height="18">
+                                                        <use xlink:href="#pinterest"></use>
+                                                    </svg>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="text-secondary p-0">
+                                                    <svg width="18" height="18">
+                                                        <use xlink:href="#instagram"></use>
+                                                    </svg>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <section class="product-tabs mt-5">
+            <div class="container">
+                <div class="row">
+                    <div class="tabs-listing">
+                        <nav>
+                            <div class="nav nav-tabs d-flex justify-content-center" id="nav-tab" role="tablist">
+                                <button class="nav-link active text-uppercase px-5 py-3" id="nav-home-tab"
+                                    data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab"
+                                    aria-controls="nav-home" aria-selected="true">Description</button>
+                                <button class="nav-link text-uppercase px-5 py-3" id="nav-information-tab"
+                                    data-bs-toggle="tab" data-bs-target="#nav-information" type="button" role="tab"
+                                    aria-controls="nav-information" aria-selected="false" tabindex="-1">Additional
+                                    information</button>
+                                <button class="nav-link text-uppercase px-5 py-3" id="nav-shipping-tab"
+                                    data-bs-toggle="tab" data-bs-target="#nav-shipping" type="button" role="tab"
+                                    aria-controls="nav-shipping" aria-selected="false" tabindex="-1">Shipping &amp;
+                                    Return</button>
+                                <button class="nav-link text-uppercase px-5 py-3" id="nav-review-tab"
+                                    data-bs-toggle="tab" data-bs-target="#nav-review" type="button" role="tab"
+                                    aria-controls="nav-review" aria-selected="false" tabindex="-1">Reviews</button>
+                            </div>
+                        </nav>
+                        <div class="tab-content py-5" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
+                                aria-labelledby="nav-home-tab">
+                                <h5>Product Description</h5>
+                                <p
+                                    th:text="${product.description != null ? product.description : 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna viverra non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis. Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus.'}">
+                                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque
+                                    volutpat mattis eros.
+                                </p>
+                            </div>
+                            <div class="tab-pane fade" id="nav-information" role="tabpanel"
+                                aria-labelledby="nav-information-tab">
+                                <h5>It is Comfortable and Best</h5>
+                                <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                                    fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
+                                    qui officia deserunt mollit anim id est laborum. Duis aute irure dolor in
+                                    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+                                    mollit anim id est laborum.</p>
+                            </div>
+                            <div class="tab-pane fade" id="nav-shipping" role="tabpanel"
+                                aria-labelledby="nav-shipping-tab">
+                                <h5>Returns Policy</h5>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce eros justo, accumsan
+                                    non dui sit amet. Phasellus semper volutpat mi sed imperdiet. Ut odio lectus,
+                                    vulputate non ex non, mattis sollicitudin purus. Mauris consequat justo a enim
+                                    interdum, in consequat dolor accumsan. Nulla iaculis diam purus, ut vehicula leo
+                                    efficitur at.</p>
+                                <p>Interdum et malesuada fames ac ante ipsum primis in faucibus. In blandit nunc enim,
+                                    sit amet pharetra erat aliquet ac.</p>
+                                <h5>Shipping</h5>
+                                <p>Pellentesque ultrices ut sem sit amet lacinia. Sed nisi dui, ultrices ut turpis
+                                    pulvinar. Sed fringilla ex eget lorem consectetur, consectetur blandit lacus varius.
+                                    Duis vel scelerisque elit, et vestibulum metus. Integer sit amet tincidunt tortor.
+                                    Ut lacinia ullamcorper massa, a fermentum arcu vehicula ut. Ut efficitur faucibus
+                                    dui Nullam tristique dolor eget turpis consequat varius. Quisque a interdum augue.
+                                    Nam ut nibh mauris.</p>
+                            </div>
+                            <div class="tab-pane fade" id="nav-review" role="tabpanel" aria-labelledby="nav-review-tab">
+                                <div class="review-box review-style1 d-flex">
+                                    <div class="review-item d-flex">
+                                        <div class="row g-4">
+                                            <div class="col-md-3">
+                                                <div class="image-holder">
+                                                    <img src="/user/images/template/product-thumbnail-1.jpg"
+                                                        alt="review" class="rounded-circle img-fluid">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <div class="review-content">
+                                                    <div class="rating-container d-flex align-items-center">
+                                                        <svg width="32" height="32">
+                                                            <use xlink:href="#star-solid"></use>
+                                                        </svg>
+                                                        <svg width="32" height="32">
+                                                            <use xlink:href="#star-solid"></use>
+                                                        </svg>
+                                                        <svg width="32" height="32">
+                                                            <use xlink:href="#star-solid"></use>
+                                                        </svg>
+                                                        <svg width="32" height="32">
+                                                            <use xlink:href="#star-outline"></use>
+                                                        </svg>
+                                                        <svg width="32" height="32">
+                                                            <use xlink:href="#star-outline"></use>
+                                                        </svg>
+                                                        <span class="rating-count">(3.5)</span>
+                                                    </div>
+                                                    <div class="review-header">
+                                                        <span class="author-name">Tom Johnson</span>
+                                                        <span class="review-date">– 07/05/2022</span>
+                                                    </div>
+                                                    <p>Vitae tortor condimentum lacinia quis vel eros donec ac. Nam at
+                                                        lectus urna duis convallis convallis</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="review-item d-flex">
+                                        <div class="row g-4">
+                                            <div class="col-md-3">
+                                                <div class="image-holder">
+                                                    <img src="/user/images/template/product-thumbnail-2.jpg"
+                                                        alt="review" class="rounded-circle img-fluid">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <div class="review-content">
+                                                    <div class="rating-container d-flex align-items-center">
+                                                        <svg width="32" height="32">
+                                                            <use xlink:href="#star-solid"></use>
+                                                        </svg>
+                                                        <svg width="32" height="32">
+                                                            <use xlink:href="#star-solid"></use>
+                                                        </svg>
+                                                        <svg width="32" height="32">
+                                                            <use xlink:href="#star-solid"></use>
+                                                        </svg>
+                                                        <svg width="32" height="32">
+                                                            <use xlink:href="#star-outline"></use>
+                                                        </svg>
+                                                        <svg width="32" height="32">
+                                                            <use xlink:href="#star-outline"></use>
+                                                        </svg>
+                                                        <span class="rating-count">(3.5)</span>
+                                                    </div>
+                                                    <div class="review-header">
+                                                        <span class="author-name">Jenny Willis</span>
+                                                        <span class="review-date">– 07/05/2022</span>
+                                                    </div>
+                                                    <p>Vitae tortor condimentum lacinia quis vel eros donec ac. Nam at
+                                                        lectus urna duis convallis convallis</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="add-review mt-5">
+                                    <h3>Add a review</h3>
+                                    <p>Your email address will not be published. Required fields are marked *</p>
+                                    <form id="form" class="form-group">
+                                        <div class="pb-3">
+                                            <div class="review-rating">
+                                                <span>Your rating *</span>
+                                                <div class="rating-container d-flex align-items-center">
+                                                    <div class="rating" data-rating="1">
+                                                        <svg width="24" height="24" class="text-warning">
+                                                            <use xlink:href="#star-solid"></use>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="rating" data-rating="2">
+                                                        <svg width="24" height="24" class="text-warning">
+                                                            <use xlink:href="#star-solid"></use>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="rating" data-rating="3">
+                                                        <svg width="24" height="24" class="text-warning">
+                                                            <use xlink:href="#star-solid"></use>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="rating" data-rating="4">
+                                                        <svg width="24" height="24" class="text-secondary">
+                                                            <use xlink:href="#star-solid"></use>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="rating" data-rating="5">
+                                                        <svg width="24" height="24" class="text-secondary">
+                                                            <use xlink:href="#star-solid"></use>
+                                                        </svg>
+                                                    </div>
+                                                    <span class="rating-count">(3.5)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="pb-3">
+                                            <input type="file" class="form-control" data-text="Choose your file">
+                                        </div>
+                                        <div class="pb-3">
+                                            <label>Your Review *</label>
+                                            <textarea rows="6" class="form-control"
+                                                placeholder="Write your review here"></textarea>
+                                        </div>
+                                        <div class="pb-3">
+                                            <label>Your Name *</label>
+                                            <input type="text" name="name" placeholder="Write your name here"
+                                                class="form-control">
+                                        </div>
+                                        <div class="pb-3">
+                                            <label>Your Email *</label>
+                                            <input type="text" name="email" placeholder="Write your email here"
+                                                class="form-control">
+                                        </div>
+                                        <div class="pb-3">
+                                            <label>
+                                                <input type="checkbox" required="">
+                                                <span class="label-body">Save my name, email, and website in this
+                                                    browser for the next time.</span>
+                                            </label>
+                                        </div>
+                                        <button type="submit" name="submit"
+                                            class="btn btn-dark btn-large text-uppercase w-100">Submit</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="related-products" class="related-products py-5"
+            th:if="${relatedProducts != null && !#lists.isEmpty(relatedProducts)}">
+            <div class="container-fluid">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
+                    <h4 class="text-uppercase">Related Products</h4>
+                    <a th:href="@{/products}" class="btn-link">View All Products</a>
+                </div>
+
+                <div data-aos="fade-in">
+                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5">
+                        <div class="col" th:each="relatedProduct : ${relatedProducts}">
+                            <div class="product-item hover-effect-slide">
+                                <div class="image-holder position-relative">
+                                    <div class="ratio" style="--bs-aspect-ratio: 116.87%;">
+                                        <a th:href="@{'/products/' + ${relatedProduct.id}}" class="d-block w-100 h-100">
+                                            <img th:src="${relatedProduct.primaryImagePath != null and !#strings.isEmpty(relatedProduct.primaryImagePath) ? relatedProduct.primaryImagePath : '/user/images/template/product-thumbnail-1.jpg'}"
+                                                th:alt="${relatedProduct.name}"
+                                                class="product-image img-fluid w-100 h-100" style="object-fit: cover;"
+                                                onerror="this.src='/user/images/template/product-thumbnail-1.jpg'">
+                                        </a>
+                                    </div>
+                                    <div sec:authorize="isAuthenticated()">
+                                        <form th:action="@{'/cart/add/' + ${relatedProduct.id}}" method="post"
+                                            class="mt-2">
+                                            <button class="btn btn-primary w-100 mt-2 rounded-1" type="submit">Add to
+                                                cart</button>
+                                        </form>
+                                    </div>
+                                    <div sec:authorize="!isAuthenticated()" class="mt-2">
+                                        <a th:href="@{/login}"
+                                            class="btn btn-outline-primary w-100 mt-2 rounded-1">Login to buy</a>
+                                    </div>
+                                </div>
+                                <div class="product-content">
+                                    <h5 class="mt-3">
+                                        <a th:href="@{'/products/' + ${relatedProduct.id}}"
+                                            th:text="${relatedProduct.name}">Product Name</a>
+                                    </h5>
+                                    <span class="text-secondary"
+                                        th:text="${#numbers.formatDecimal(relatedProduct.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0
+                                        ₫</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div layout:fragment="pageScripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Quantity buttons logic
+                const quantityInput = document.getElementById('quantity');
+                const btnMinus = document.querySelector('.quantity-left-minus');
+                const btnPlus = document.querySelector('.quantity-right-plus');
+                const errorMsg = document.getElementById('quantity-error');
+                const addToCartForm = document.getElementById('addToCartForm');
+                const maxStock = parseInt(quantityInput.getAttribute('max')) || 100;
+
+                function validateQuantity() {
+                    let val = parseInt(quantityInput.value);
+
+                    if (isNaN(val) || val < 1) {
+                        quantityInput.value = 0;
+                        val = 1;
+                    }
+
+                    if (val > maxStock) {
+                        errorMsg.style.display = 'block';
+                        quantityInput.classList.add('is-invalid');
+                        quantityInput.value = maxStock;
+                        return false;
+                    } else {
+                        errorMsg.style.display = 'none';
+                        quantityInput.classList.remove('is-invalid');
+                        return true;
+                    }
+                }
+
+                quantityInput.addEventListener('keydown', function (e) {
+                    const isNumber = /^[0-9]$/i.test(e.key);
+                    const isControlKey = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key);
+
+                    if (!isNumber && !isControlKey) {
+                        e.preventDefault();
+                    }
+                });
+
+                quantityInput.addEventListener('paste', function (e) {
+                    const pasteData = e.clipboardData.getData('text');
+                    if (!/^\d+$/.test(pasteData)) {
+                        e.preventDefault();
+                    }
+                });
+
+                // Sử dụng capture phase để chạy trước jQuery event listener
+                btnMinus.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    let val = parseInt(quantityInput.value);
+                    if (val > 1) {
+                        quantityInput.value = val - 1;
+                        validateQuantity();
+                    }
+                }, true); // true = capture phase
+
+                btnPlus.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    let val = parseInt(quantityInput.value);
+                    if (val < maxStock) {
+                        quantityInput.value = val + 1;
+                        validateQuantity();
+                    } else {
+                        validateQuantity();
+                    }
+                }, true);
+
+                quantityInput.addEventListener('input', function () {
+                    validateQuantity();
+                });
+
+                if (addToCartForm) {
+                    addToCartForm.addEventListener('submit', function (e) {
+                        if (!validateQuantity()) {
+                            e.preventDefault();
+                            alert('Số lượng không hợp lệ! Vui lòng kiểm tra lại hàng trong kho.');
+                        }
+                    });
+                }
+
+                var thumb_slider = new Swiper(".product-thumbnail-slider", {
+                    spaceBetween: 10,
+                    slidesPerView: 4,
+                    freeMode: true,
+                    watchSlidesProgress: true,
+                    direction: 'vertical',
+                });
+                var large_slider = new Swiper(".product-large-slider", {
+                    spaceBetween: 10,
+                    effect: 'fade',
+                    fadeEffect: {
+                        crossFade: true
+                    },
+                    speed: 300,
+                    allowTouchMove: true,
+                    pagination: {
+                        el: ".swiper-pagination",
+                        type: 'bullets',
+                        clickable: true,
+                        dynamicBullets: false,
+                    },
+                    thumbs: {
+                        swiper: thumb_slider,
+                    },
+                    on: {
+                        init: function () {
+                            if (this.pagination && this.pagination.el) {
+                                this.pagination.render();
+                                this.pagination.update();
+                            }
+                        },
+                        slideChange: function () {
+                            this.slides.forEach((slide, index) => {
+                                if (index === this.activeIndex) {
+                                    slide.style.opacity = '1';
+                                    slide.style.pointerEvents = 'auto';
+                                } else {
+                                    slide.style.opacity = '0';
+                                    slide.style.pointerEvents = 'none';
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+
+                const colorItems = document.querySelectorAll('.color-item');
+                const colorInput = document.getElementById('selectedColor');
+                const colorText = document.getElementById('selectedColorText');
+
+                if (colorItems.length > 0) {
+                    const first = colorItems[0];
+                    const defaultColor = first.dataset.color;
+
+                    colorInput.value = defaultColor;
+                    colorText.innerText = defaultColor;
+                }
+
+                colorItems.forEach(item => {
+                    item.addEventListener('click', function () {
+
+                        colorItems.forEach(i => i.classList.remove('active'));
+                        this.classList.add('active');
+
+                        const color = this.dataset.color;
+                        const image = this.dataset.image;
+
+                        colorInput.value = color;
+                        colorText.innerText = color;
+
+                        const swiper = document.querySelector('.product-large-slider')?.swiper;
+                        if (!swiper || !image) return;
+
+                        swiper.slides.forEach((slide, index) => {
+                            const img = slide.querySelector('img');
+                            if (img && img.src.includes(image)) {
+                                swiper.slideTo(index);
+                            }
+                        });
+                    });
+                });
+            });
+        </script>
+
+    </div>
+</body>
+
+</html>

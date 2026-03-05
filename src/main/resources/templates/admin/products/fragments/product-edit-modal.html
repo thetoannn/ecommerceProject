@@ -1,0 +1,98 @@
+<th:block th:fragment="productEditModal" xmlns:th="http://www.thymeleaf.org">
+    <div class="modal fade modal-product" id="productEditModal" tabindex="-1" role="dialog"
+         aria-labelledby="productEditModalLabel" aria-hidden="true"
+         th:data-initial-mode="${productFormMode != null ? productFormMode : 'edit'}"
+         th:data-initial-open="${productModalActive != null ? productModalActive : false}"
+         th:data-initial-edit-id="${productEditingId != null ? productEditingId : ''}">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productEditModalLabel">Chỉnh sửa sản phẩm</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="productEditForm" th:object="${productForm}" method="post" th:action="@{/admin/products}" enctype="multipart/form-data">
+                    <input type="hidden" id="editId" th:field="*{id}">
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="editProductName">Tên sản phẩm</label>
+                                <input id="editProductName" type="text" class="form-control"
+                                       th:field="*{name}" placeholder="Nhập tên sản phẩm">
+                                <div class="text-danger small" th:if="${#fields != null and #fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="editProductPrice">Giá bán (₫)</label>
+                                <input id="editProductPrice" type="number" step="1000" min="0" class="form-control"
+                                       th:field="*{price}" placeholder="Nhập giá bán">
+                                <div class="text-danger small" th:if="${#fields != null and #fields.hasErrors('price')}" th:errors="*{price}"></div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="editProductStock">Tồn kho</label>
+                                <input id="editProductStock" type="number" min="0" class="form-control"
+                                       th:field="*{stock}" placeholder="Số lượng hiện có">
+                                <div class="text-danger small" th:if="${#fields != null and #fields.hasErrors('stock')}" th:errors="*{stock}"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editProductImages">Hình ảnh sản phẩm</label>
+                            <input id="editProductImages" type="file" name="images" class="form-control-file" multiple accept="image/*">
+                            <small class="form-text text-muted">
+                                Có thể chọn thêm tối đa 6 ảnh (kể cả ảnh hiện có). Ảnh đầu tiên là ảnh chính.
+                            </small>
+                            <div id="editImageError" class="text-danger small mt-1" style="display: none;"></div>
+                            <div id="editImagePreviewContainer" class="mt-3" style="display: none;">
+                                <label class="mb-2">Preview ảnh mới (<span id="editImageCount">0</span>/6):</label>
+                                <div id="editImagePreviewList" class="d-flex flex-wrap gap-2"></div>
+                            </div>
+                        </div>
+                        <div class="form-group" id="editExistingImagesContainer" style="display: none;">
+                            <label>Ảnh hiện tại</label>
+                            <div id="editExistingImagesList" class="d-flex flex-wrap gap-2"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="editProductBrand">Hãng sản xuất</label>
+                                <div class="combobox-wrapper">
+                                    <input type="text"
+                                           id="editProductBrandInput"
+                                           class="form-control combobox-input"
+                                           placeholder="Chọn hãng"
+                                           autocomplete="off">
+                                    <input type="hidden" id="editProductBrand" name="brandId" th:field="*{brandId}">
+                                    <ul id="editProductBrandDropdown" class="combobox-dropdown"></ul>
+                                </div>
+                                <div class="text-danger small" th:if="${#fields != null and #fields.hasErrors('brandId')}" th:errors="*{brandId}"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editProductDescription">Mô tả</label>
+                            <textarea id="editProductDescription" class="form-control" rows="4"
+                                      th:field="*{description}" placeholder="Thông tin sản phẩm"></textarea>
+                            <div class="text-danger small" th:if="${#fields != null and #fields.hasErrors('description')}" th:errors="*{description}"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Thông số kĩ thuật sản phẩm</label>
+                            <div id="editProductAttributesContainer" class="border rounded p-3">
+                            </div>
+                            <small class="form-text text-muted">
+                                Chọn các thông số kĩ thuật như Color, Storage, RAM cho sản phẩm
+                            </small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-gradient-primary" id="productEditFormSubmit">
+                            Cập nhật
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+

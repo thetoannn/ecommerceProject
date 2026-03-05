@@ -1,0 +1,66 @@
+<section th:fragment="hero">
+    <div class="container-fluid">
+        <div class="slideshow slide-in arrow-absolute text-white" style="height: 80vh;">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide jarallax">
+                    <img th:src="@{/user/images/template/banner-large-1.jpg}" class="jarallax-img" alt="slideshow">
+                    <div class="banner-content w-100">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-10 pt-5">
+                                    <h2 class="display-1 ls-0 mt-5 pt-5 txt-fx slide-up">Buy Electronic Gadgets at Affordable Prices</h2>
+                                    <p class="caption">Tech gadgets are all about making your life easier</p>
+                                    <a th:href="@{/products}" class="btn btn-outline-light text-uppercase rounded-3 px-4 py-3 mt-3">Shop Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide jarallax">
+                    <img th:src="@{/user/images/template/banner-large-2.jpg}" class="jarallax-img" alt="slideshow">
+                    <div class="banner-content w-100">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-10 pt-5">
+                                    <h2 class="display-1 ls-0 mt-5 pt-5 txt-fx slide-up">Cool Tech Gadgets Collection 2023</h2>
+                                    <p class="caption">Tech gadgets are all about making your life easier</p>
+                                    <a th:href="@{/products}" class="btn btn-outline-light text-uppercase rounded-3 px-4 py-3 mt-3">Shop Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide jarallax">
+                    <img th:src="@{/user/images/template/banner-large-3.jpg}" class="jarallax-img" alt="slideshow">
+                    <div class="banner-content w-100">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-10 pt-5">
+                                    <h2 class="display-1 ls-0 mt-5 pt-5 txt-fx slide-up">Sturdy And Multifunction New Gadgets</h2>
+                                    <p class="caption">Tech gadgets are all about making your life easier</p>
+                                    <a th:href="@{/products}" class="btn btn-outline-light text-uppercase rounded-3 px-4 py-3 mt-3">Shop Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+            <div class="pagination-wrapper position-absolute">
+                <div class="container">
+                    <div class="slideshow-swiper-pagination"></div>
+                </div>
+            </div>
+            <div class="icon-arrow icon-arrow-left text-white">
+                <svg width="50" height="50" viewBox="0 0 24 24">
+                    <use xlink:href="#arrow-left"></use>
+                </svg>
+            </div>
+            <div class="icon-arrow icon-arrow-right text-white">
+                <svg width="50" height="50" viewBox="0 0 24 24">
+                    <use xlink:href="#arrow-right"></use>
+                </svg>
+            </div>
+        </div>
+    </div>
+</section>

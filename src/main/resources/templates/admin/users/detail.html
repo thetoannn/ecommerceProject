@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/main}">
+<head>
+    <title layout:fragment="title">Chi tiết Người dùng</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="page-title">Chi tiết Người dùng</h3>
+            <p class="text-muted mb-0">Thông tin chi tiết tài khoản</p>
+        </div>
+        <a th:href="@{/admin/users}" class="btn btn-outline-primary">
+            <i class="ti-arrow-left"></i> Quay lại
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Thông tin tài khoản</h4>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Mã UID</small>
+                        <div class="font-weight-semibold" th:text="${accountUser.uid}">USR-XXXX</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Tên đăng nhập</small>
+                        <div class="font-weight-semibold" th:text="${accountUser.username}">username</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Email</small>
+                        <div class="font-weight-semibold" th:text="${accountUser.email}">email@example.com</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Vai trò</small>
+                        <div>
+                            <th:block th:switch="${accountUser.role != null ? #strings.toUpperCase(accountUser.role) : ''}">
+                                <span th:case="'ADMIN'" class="badge badge-danger">Quản trị viên</span>
+                                <span th:case="'USER'" class="badge badge-info">Người dùng</span>
+                                <span th:case="*" class="badge badge-light" th:text="${accountUser.role}">—</span>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Trạng thái</small>
+                        <div>
+                            <th:block th:switch="${accountUser.status != null ? accountUser.status.name() : ''}">
+                                <span th:case="'ACTIVE'" class="badge badge-success">Hoạt động</span>
+                                <span th:case="'BLOCKED'" class="badge badge-secondary">Đã khóa</span>
+                                <span th:case="'PENDING'" class="badge badge-warning">Chờ xử lý</span>
+                                <span th:case="*" class="badge badge-light">—</span>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Ngày tạo</small>
+                        <div class="font-weight-semibold" 
+                             th:text="${accountUser.createdAt != null ? #temporals.format(accountUser.createdAt, 'dd/MM/yyyy HH:mm') : '—'}">
+                            —
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Thông tin cá nhân</h4>
+                    <div th:if="${profileUser != null}">
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Họ và tên</small>
+                            <div class="font-weight-semibold" th:text="${profileUser.fullName != null ? profileUser.fullName : 'Chưa cập nhật'}">—</div>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Số điện thoại</small>
+                            <div class="font-weight-semibold" th:text="${profileUser.phone != null ? profileUser.phone : 'Chưa cập nhật'}">—</div>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Ngày sinh</small>
+                            <div class="font-weight-semibold" 
+                                 th:text="${profileUser.dateOfBirth != null ? #temporals.format(profileUser.dateOfBirth, 'dd/MM/yyyy') : 'Chưa cập nhật'}">
+                                —
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Địa chỉ</small>
+                            <div class="font-weight-semibold" th:text="${profileUser.addressLine != null ? profileUser.addressLine : 'Chưa cập nhật'}">—</div>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Thành phố</small>
+                            <div class="font-weight-semibold" th:text="${profileUser.city != null ? profileUser.city : 'Chưa cập nhật'}">—</div>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Quốc gia</small>
+                            <div class="font-weight-semibold" th:text="${profileUser.country != null ? profileUser.country : 'Chưa cập nhật'}">—</div>
+                        </div>
+                    </div>
+                    <div th:if="${profileUser == null}" class="text-center text-muted py-4">
+                        <i class="ti-user" style="font-size: 2rem;"></i>
+                        <p class="mt-2 mb-0">Chưa có thông tin cá nhân</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="card-title mb-0">Thao tác</h4>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <a th:href="@{'/admin/users/' + ${accountUser.id} + '/history'}"
+                           class="btn btn-outline-info">
+                            <i class="ti-time mr-2"></i>Xem lịch sử
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
+

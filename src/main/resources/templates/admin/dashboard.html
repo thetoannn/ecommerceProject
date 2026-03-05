@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/main}">
+<head>
+    <title layout:fragment="title">Dashboard</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="row">
+        <div class="col-md-12 grid-margin">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div class="mb-3 mb-md-0">
+                    <h3 class="font-weight-bold mb-1">Xin chào, <span sec:authentication="name">Admin</span></h3>
+                    <p class="text-muted mb-0">Theo dõi sức khỏe kinh doanh của cửa hàng.</p>
+                </div>
+                <div>
+                    <span class="badge badge-outline-primary px-3 py-2">
+                        <i class="ti-timer mr-2"></i>
+                        Cập nhật lúc <span th:text="${#temporals.format(#temporals.createNow(), 'HH:mm dd/MM/yyyy')}">--</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-3 col-md-6 grid-margin stretch-card">
+            <div class="card card-dark-blue">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-white mb-2">Tổng doanh thu</p>
+                            <h3 class="text-white mb-0" th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</h3>
+                        </div>
+                        <div class="icon icon-box-light">
+                            <span class="icon-rocket"></span>
+                        </div>
+                    </div>
+                    <p class="text-white-50 mb-0 mt-2">
+                        +<span th:text="${#numbers.formatDecimal(todayRevenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span> hôm nay
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 grid-margin stretch-card">
+            <div class="card card-tale">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-white mb-2">Tổng đơn hàng</p>
+                            <h3 class="text-white mb-0" th:text="${totalOrders}">0</h3>
+                        </div>
+                        <div class="icon icon-box-light">
+                            <span class="icon-layers"></span>
+                        </div>
+                    </div>
+                    <p class="text-white-50 mb-0 mt-2">
+                        <span th:text="${todayOrders}">0</span> đơn mới hôm nay
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 grid-margin stretch-card">
+            <div class="card card-light-blue">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-white mb-2">Tổng sản phẩm</p>
+                            <h3 class="text-white mb-0" th:text="${totalProducts}">0</h3>
+                        </div>
+                        <div class="icon icon-box-light">
+                            <span class="icon-grid"></span>
+                        </div>
+                    </div>
+                    <p class="text-white-50 mb-0 mt-2">Danh mục đang kinh doanh</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 grid-margin stretch-card">
+            <div class="card card-light-danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-white mb-2">Tổng người dùng</p>
+                            <h3 class="text-white mb-0" th:text="${totalUsers}">0</h3>
+                        </div>
+                        <div class="icon icon-box-light">
+                            <span class="icon-user"></span>
+                        </div>
+                    </div>
+                    <p class="text-white-50 mb-0 mt-2">Khách hàng đã đăng ký</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <p class="card-title mb-1">Doanh thu 7 ngày gần nhất</p>
+                            <p class="text-muted mb-0">Theo số liệu thực từ đơn hàng</p>
+                        </div>
+                        <a th:href="@{/admin/orders}" class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
+                    </div>
+                    <canvas id="weeklyRevenueChart" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title mb-1">Tình trạng đơn hàng</p>
+                    <p class="text-muted mb-3">Tỷ lệ phần trăm các trạng thái</p>
+                    <canvas id="orderStatusChart" height="220"></canvas>
+                    <div class="d-flex justify-content-between border-top pt-3 mt-4">
+                        <div>
+                            <p class="text-muted mb-1">Đang xử lý</p>
+                            <h5 class="font-weight-bold" th:text="${pendingOrders}">0</h5>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-muted mb-1">Hoàn thành</p>
+                            <h5 class="font-weight-bold" th:text="${deliveredOrders}">0</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-7 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <p class="card-title mb-0">Đơn hàng gần đây</p>
+                        <a th:href="@{/admin/orders}" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Ngày đặt</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${#lists.isEmpty(recentOrders)}">
+                                <td colspan="6" class="text-center text-muted py-4">Chưa có đơn hàng</td>
+                            </tr>
+                            <tr th:each="order : ${orders}">
+                                <td>#<span th:text="${order.id}">0</span></td>
+                                <!-- Lấy thông tin email từ Account qua accountUid -->
+                                <td th:text="${#strings.isEmpty(order.accountUid) ? 'Khách lẻ' : ${order.accountUid}}">Khách</td>
+                                <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">Date</td>
+                                <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</td>
+                                <td>
+        <span class="badge badge-status"
+              th:classappend="${order.status.name() == 'PROCESSING'} ? ' badge-warning' :
+                              (${order.status.name() == 'SHIPPED'} ? ' badge-info' :
+                              (${order.status.name() == 'DELIVERED'} ? ' badge-success' : ' badge-danger'))">
+            <span th:switch="${order.status.name()}">
+                <span th:case="'PROCESSING'">Đang xử lý</span>
+                <span th:case="'SHIPPED'">Đang giao</span>
+                <span th:case="'DELIVERED'">Hoàn thành</span>
+                <span th:case="'CANCELLED'">Đã hủy</span>
+            </span>
+        </span>
+                                </td>
+                                <td class="text-right">
+                                    <a th:href="@{'/admin/orders/' + ${order.id}}" class="btn btn-sm btn-gradient-primary">
+                                        <i class="ti-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <p class="card-title mb-0">Khách hàng mới</p>
+                        <a th:href="@{/admin/users}" class="text-info">Xem tất cả</a>
+                    </div>
+                    <div th:if="${#lists.isEmpty(recentUsers)}" class="text-center text-muted py-4">
+                        Chưa có người dùng mới
+                    </div>
+                    <div th:if="${!#lists.isEmpty(recentUsers)}" class="list-group list-group-flush">
+                        <div class="list-group-item px-0" th:each="user : ${recentUsers}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0" th:text="${user.username}">username</h6>
+                                    <small class="text-muted" th:text="${user.email}">email</small>
+                                </div>
+                                <div class="text-right">
+                                    <span class="badge badge-outline-primary"
+                                          th:text="${user.role != null ? user.role : 'USER'}">USER</span>
+                                    <p class="text-muted mb-0" th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd/MM') : '--'}"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <p class="card-title mb-0">Top sản phẩm bán chạy</p>
+                        <a th:href="@{/admin/products}" class="text-info">Chi tiết</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Sản phẩm</th>
+                                <th>Đã bán</th>
+                                <th>Tồn kho</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${#lists.isEmpty(topProducts)}">
+                                <td colspan="4" class="text-center text-muted py-4">Chưa có dữ liệu bán hàng</td>
+                            </tr>
+                            <tr th:each="product, iter : ${topProducts}">
+                                <td th:text="${iter.index + 1}">1</td>
+                                <td>
+                                    <div class="font-weight-semibold" th:text="${product.name}">Tên</div>
+                                    <small class="text-muted" th:text="${product.brand}">Brand</small>
+                                </td>
+                                <td>
+                                    <span class="badge badge-outline-success" th:text="${product.soldQuantity}">0</span>
+                                </td>
+                                <td th:text="${product.stock != null ? product.stock : 0}">0</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 grid-margin stretch-card">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <p class="card-title mb-0">Sản phẩm sắp hết hàng</p>
+                        <a th:href="@{/admin/products}" class="text-info">Quản lý tồn kho</a>
+                    </div>
+                    <div th:if="${#lists.isEmpty(lowStockProducts)}" class="text-muted text-center py-4">
+                        Không có sản phẩm nào dưới ngưỡng
+                    </div>
+                    <div th:if="${!#lists.isEmpty(lowStockProducts)}" class="list-group list-group-flush">
+                        <div class="list-group-item px-0" th:each="product : ${lowStockProducts}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0" th:text="${product.name}">Tên</h6>
+                                    <small class="text-muted" th:text="${product.brand != null ? product.brand.name : '—'}">Brand</small>
+                                </div>
+                                <span class="badge badge-danger" th:text="${product.stock != null ? product.stock : 0}">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title mb-3">Danh mục nổi bật</p>
+                    <div th:if="${#lists.isEmpty(categoryHighlights)}" class="text-muted text-center py-4">
+                        Chưa có dữ liệu danh mục
+                    </div>
+                    <div th:if="${!#lists.isEmpty(categoryHighlights)}">
+                        <div class="d-flex align-items-center mb-3" th:each="cate, iter : ${categoryHighlights}">
+                            <div class="icon icon-box-primary mr-3">
+                                <span class="icon-tag"></span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0" th:text="${cate.name}">Danh mục</h6>
+                                <small class="text-muted" th:text="${cate.count} + ' sản phẩm'">0 sản phẩm</small>
+                            </div>
+                            <div class="text-primary font-weight-bold">Top <span th:text="${iter.index + 1}">1</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script th:inline="javascript">
+    const weeklyLabels = /*[[${weeklyRevenueLabels}]]*/ [];
+    const weeklyData = /*[[${weeklyRevenueData}]]*/ [];
+    const statusLabels = /*[[${statusLabels}]]*/ [];
+    const statusData = /*[[${statusData}]]*/ [];
+
+    (function() {
+        if (typeof Chart === 'undefined') {
+            return;
+        }
+
+        const weeklyCtx = document.getElementById('weeklyRevenueChart');
+        if (weeklyCtx) {
+            new Chart(weeklyCtx, {
+                type: 'line',
+                data: {
+                    labels: weeklyLabels,
+                    datasets: [{
+                        label: 'Doanh thu (₫)',
+                        data: weeklyData,
+                        borderColor: '#0090e7',
+                        backgroundColor: 'rgba(0, 144, 231, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.35,
+                        fill: true,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#0090e7'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed.y || 0;
+                                    return new Intl.NumberFormat('vi-VN').format(value) + ' ₫';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => new Intl.NumberFormat('vi-VN', { notation: 'compact' }).format(value) + ' ₫'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        const statusCtx = document.getElementById('orderStatusChart');
+        if (statusCtx) {
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        data: statusData,
+                        backgroundColor: ['#f6c23e', '#36b9cc', '#1cc88a', '#e74a3b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+    })();
+</script>
+</body>
+</html>
+

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title layout:fragment="title">Register</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <section id="register-form" class="py-5 my-5">
+        <div class="container-sm">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <div class="breadcrumbs pt-3 my-4">
+                        <span class="item"><a th:href="@{/}">Home /</a></span>
+                        <span class="item">My Account</span>
+                    </div>
+                    <h2 class="section-title text-uppercase">Register</h2>
+                    <form id="form" method="post" th:action="@{/register}" th:object="${registerRequest}" class="form-group flex-wrap">
+                        <div class="col-12 pb-3">
+                            <label>Username *</label>
+                            <input type="text" th:field="*{username}" placeholder="Write your username here" class="form-control" required>
+                            <span class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+                        </div>
+                        <div class="col-12 pb-3">
+                            <label>Email address *</label>
+                            <input type="email" th:field="*{email}" placeholder="Write your email address here" class="form-control" required>
+                            <span class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                        </div>
+                        <div class="col-12 pb-3">
+                            <label>Password *</label>
+                            <input type="password" th:field="*{password}" placeholder="Enter your password" class="form-control" required>
+                            <span class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+                        </div>
+                        <div class="col-12 pb-3">
+                            <label>Confirm Password *</label>
+                            <input type="password" th:field="*{confirmPassword}" placeholder="Confirm your password" class="form-control" required>
+                            <span class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></span>
+                        </div>
+                        <div class="col-12 pb-3">
+                            <label>
+                                <input type="checkbox" name="agree-terms" required>
+                                <span class="label-body">I agree to the terms and conditions *</span>
+                            </label>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" name="submit" class="btn btn-dark text-uppercase w-100">Register</button>
+                            <p class="mt-3">Already have an account? <a th:href="@{/login}" class="text-muted">Log in</a></p>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <div class="text-danger" th:if="${param.error}">
+                                <span th:text="${param.error[0]}">Registration failed. Please try again.</span>
+                            </div>
+                            <div class="text-success" th:if="${param.success}">Registration successful! Please log in.</div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+</body>
+</html>
+

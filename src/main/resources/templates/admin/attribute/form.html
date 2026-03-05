@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{admin/layout/main}">
+
+<head>
+    <title layout:fragment="title" th:text="${isEdit ? 'Chỉnh sửa thuộc tính' : 'Thêm thuộc tính'}">Thuộc tính</title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <div class="mb-3">
+            <h3 class="font-weight-bold mb-1" th:text="${isEdit ? 'Chỉnh sửa thuộc tính' : 'Thêm thuộc tính mới'}">Thuộc
+                tính</h3>
+            <p class="text-muted mb-0">Ví dụ: Color, Storage, RAM, Size...</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form th:object="${attribute}"
+                            th:action="${isEdit} ? @{/admin/attributes/{id}/edit(id=*{id})} : @{/admin/attributes/new}"
+                            method="post">
+                            <input type="hidden" th:field="*{id}">
+
+                            <div class="form-group">
+                                <label for="attributeName">Tên thuộc tính <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="attributeName" th:field="*{name}"
+                                    placeholder="Ví dụ: Color, Storage, RAM..." required>
+                                <small class="form-text text-muted">
+                                    Tên thuộc tính sẽ hiển thị trên trang chi tiết sản phẩm
+                                </small>
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <button type="submit" class="btn btn-primary mr-2">
+                                    <i class="ti-save mr-2"></i>
+                                    <span th:text="${isEdit ? 'Cập nhật' : 'Tạo thuộc tính'}">Lưu</span>
+                                </button>
+                                <a th:href="@{/admin/attributes}" class="btn btn-light">
+                                    <i class="ti-close mr-2"></i> Hủy
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title">Hướng dẫn</h6>
+                        <ul class="small mb-0">
+                            <li>Tên thuộc tính nên ngắn gọn và rõ ràng</li>
+                            <li>Sau khi tạo thuộc tính, bạn có thể thêm các giá trị cho nó</li>
+                            <li>Ví dụ: Thuộc tính "Color" có các giá trị "Red", "Blue", "Black"...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

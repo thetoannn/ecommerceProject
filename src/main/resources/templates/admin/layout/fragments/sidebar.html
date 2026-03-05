@@ -1,0 +1,52 @@
+<div th:fragment="sidebar">
+    <nav class="sidebar sidebar-offcanvas" id="sidebar"
+         th:with="currentUri=${#httpServletRequest != null ? #httpServletRequest.requestURI : ''}">
+        <ul class="nav">
+<!--            <li class="nav-item" th:classappend="${currentUri.startsWith('/admin/dashboard')} ? ' active'">-->
+<!--                <a class="nav-link" th:href="@{/admin/dashboard}">-->
+<!--                    <i class="icon-grid menu-icon"></i>-->
+<!--                    <span class="menu-title">Dashboard</span>-->
+<!--            </a>-->
+<!--            </li>-->
+            <li class="nav-item" th:classappend="${currentUri.startsWith('/admin/products')} ? ' active'">
+                <a class="nav-link" th:href="@{/admin/products}">
+                    <i class="icon-box menu-icon"></i>
+                    <span class="menu-title">Sản phẩm</span>
+            </a>
+            </li>
+            <li class="nav-item" th:classappend="${currentUri.startsWith('/admin/brands')} ? ' active'">
+                <a class="nav-link" th:href="@{/admin/brands}">
+                    <i class="icon-tag menu-icon"></i>
+                    <span class="menu-title">Hãng điện thoại</span>
+            </a>
+            </li>
+            <li class="nav-item" th:classappend="${currentUri.startsWith('/admin/attributes')} ? ' active'">
+                <a class="nav-link" th:href="@{/admin/attributes}">
+                    <i class="icon-list menu-icon"></i>
+                    <span class="menu-title">Thông số sản phẩm</span>
+<!--                    <i class="menu-arrow"></i>-->
+                </a>
+            </li>
+            <li class="nav-item" th:classappend="${currentUri.startsWith('/admin/orders')} ? ' active'">
+                <a class="nav-link" th:href="@{/admin/orders}">
+                    <i class="icon-paper menu-icon"></i>
+                    <span class="menu-title">Đơn hàng</span>
+            </a>
+            </li>
+            <li class="nav-item" th:classappend="${currentUri.startsWith('/admin/users')} ? ' active'">
+                <a class="nav-link" th:href="@{/admin/users}">
+                    <i class="icon-head menu-icon"></i>
+                    <span class="menu-title">Tài khoản</span>
+            </a>
+            <li class="nav-item">
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="nav-link" style="border: none; background: transparent; cursor: pointer; width: 100%; text-align: left;">
+                        <i class="icon-power menu-icon text-danger"></i>
+                        <span class="menu-title text-danger">Đăng xuất</span>
+                    </button>
+                </form>
+            </li>
+        </ul>
+        </nav>
+</div>
+

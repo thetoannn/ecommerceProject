@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main}">
+
+<head>
+    <title layout:fragment="title" th:text="${addressId != null ? 'Chỉnh sửa địa chỉ' : 'Thêm địa chỉ mới'}">Địa chỉ
+    </title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <!-- Header -->
+        <section class="py-5">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="page-title pb-2"
+                        th:text="${addressId != null ? 'Chỉnh sửa địa chỉ' : 'Thêm địa chỉ mới'}">Địa chỉ</h1>
+                    <nav class="breadcrumb fs-6">
+                        <a class="breadcrumb-item nav-link" th:href="@{/}">Home</a>
+                        <a class="breadcrumb-item nav-link" th:href="@{/profile}">Hồ sơ</a>
+                        <a class="breadcrumb-item nav-link" th:href="@{/address}">Địa chỉ giao hàng</a>
+                        <span class="breadcrumb-item active" aria-current="page"
+                            th:text="${addressId != null ? 'Sửa' : 'Thêm'}">Thêm</span>
+                    </nav>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form Content -->
+        <section class="pb-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <form
+                                    th:action="${addressId != null} ? @{/address/edit/{addressId}(addressId=${addressId})} : @{/address/create}"
+                                    th:object="${addressRequest}" method="post">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label text-uppercase small text-muted">Tên người nhận
+                                                <span class="text-danger">*</span></label>
+                                            <input type="text" th:field="*{recipientName}" class="form-control"
+                                                placeholder="Nhập tên người nhận" required>
+                                            <div class="text-danger small mt-1"
+                                                th:if="${#fields.hasErrors('recipientName')}"
+                                                th:errors="*{recipientName}"></div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label text-uppercase small text-muted">Số điện thoại
+                                                <span class="text-danger">*</span></label>
+                                            <input type="text" th:field="*{phone}" class="form-control"
+                                                placeholder="Nhập số điện thoại" required>
+                                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('phone')}"
+                                                th:errors="*{phone}"></div>
+                                        </div>
+                                        <div class="col-12 mb-4">
+                                            <label class="form-label text-uppercase small text-muted">Địa chỉ chi tiết
+                                                <span class="text-danger">*</span></label>
+                                            <input type="text" th:field="*{addressLine}" class="form-control"
+                                                placeholder="Số nhà, tên đường, phường/xã..." required>
+                                            <div class="text-danger small mt-1"
+                                                th:if="${#fields.hasErrors('addressLine')}" th:errors="*{addressLine}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label text-uppercase small text-muted">Thành phố / Tỉnh
+                                                <span class="text-danger">*</span></label>
+                                            <input type="text" th:field="*{city}" class="form-control"
+                                                placeholder="Nhập thành phố hoặc tỉnh" required>
+                                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('city')}"
+                                                th:errors="*{city}"></div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label text-uppercase small text-muted">Quốc gia</label>
+                                            <input type="text" th:field="*{country}" class="form-control"
+                                                placeholder="Mặc định: Việt Nam">
+                                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('country')}"
+                                                th:errors="*{country}"></div>
+                                        </div>
+                                    </div>
+                                    <hr class="my-3">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a th:href="@{/address}" class="btn btn-outline-dark px-4">Hủy</a>
+                                        <button type="submit" class="btn btn-dark px-5">Lưu địa chỉ</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+</body>
+
+</html>

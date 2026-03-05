@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{admin/layout/main}">
+
+<head>
+    <title layout:fragment="title">Quản lý Người dùng</title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <div class="mb-3">
+            <h3 class="font-weight-bold mb-1">Quản lý người dùng</h3>
+            <p class="text-muted mb-0">Kiểm soát tài khoản và phân quyền</p>
+        </div>
+
+        <div th:if="${successMessage != null}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage != null}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <div class="d-flex flex-wrap align-items-center mb-2">
+            <form class="form-inline mb-3" method="get" th:action="@{/admin/users}">
+                <input type="text" class="form-control mr-2" name="q" placeholder="Tìm username, email, mã..."
+                    th:value="${query}" style="min-width:280px;">
+                <select class="form-control mr-2" name="role" id="roleFilter" onchange="this.form.submit()">
+                    <option value="">Tất cả vai trò</option>
+                    <option value="ADMIN" th:selected="${selectedRole != null and selectedRole == 'ADMIN'}">Quản trị
+                        viên</option>
+                    <option value="USER" th:selected="${selectedRole != null and selectedRole == 'USER'}">Người dùng
+                    </option>
+                </select>
+                <input type="hidden" name="size" th:value="${pageSize}">
+                <button class="btn btn-primary">Tìm kiếm</button>
+                <th:block
+                    th:if="${(query != null and !#strings.isEmpty(query)) or (selectedRole != null and !#strings.isEmpty(selectedRole))}">
+                    <a class="btn btn-light ml-2" th:href="@{/admin/users}">Xóa lọc</a>
+                </th:block>
+            </form>
+        </div>
+        <p class="text-muted mb-4">
+            <small>
+                Tổng: <span th:text="${totalUsers}">0</span> người dùng |
+                Hoạt động: <span th:text="${activeUsers}">0</span> |
+                Đã khóa: <span th:text="${blockedUsers}">0</span> |
+                Admin: <span th:text="${adminUsers}">0</span>
+            </small>
+        </p>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <p class="card-title">
+                    Danh sách người dùng
+                    <small class="text-muted">
+                        (<span th:text="${pageResult.totalElements}">0</span> kết quả
+                        <th:block th:if="${query != null and !#strings.isEmpty(query)}">
+                            cho "<b th:text="${query}"></b>"
+                        </th:block>
+                        <th:block th:if="${selectedRole != null and !#strings.isEmpty(selectedRole)}">
+                            <span th:if="${query != null and !#strings.isEmpty(query)}">, </span>
+                            vai trò: <b th:text="${selectedRole == 'ADMIN' ? 'Quản trị viên' : 'Người dùng'}"></b>
+                        </th:block>)
+                    </small>
+                </p>
+
+                <div class="table-responsive">
+                    <table class="table table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã UID</th>
+                                <th>Tên đăng nhập</th>
+                                <th>Email</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Khóa/Mở khóa</th>
+                                <th>Hoạt động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(users)}">
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    Không tìm thấy người dùng nào
+                                </td>
+                            </tr>
+                            <tr th:each="user, iter : ${users}">
+                                <td th:text="${(currentPage - 1) * pageSize + iter.index + 1}">1</td>
+                                <td>
+                                    <small class="text-muted" th:text="${user.uid}">USR-XXXX</small>
+                                </td>
+                                <td th:text="${user.username}">username</td>
+                                <td th:text="${user.email}">email@example.com</td>
+                                <td>
+                                    <th:block th:switch="${user.role != null ? #strings.toUpperCase(user.role) : ''}">
+                                        <span th:case="'ADMIN'" class="badge badge-danger">Quản trị viên</span>
+                                        <span th:case="'USER'" class="badge badge-info">Người dùng</span>
+                                        <span th:case="*" class="badge badge-light" th:text="${user.role}">—</span>
+                                    </th:block>
+                                </td>
+                                <td>
+                                    <th:block th:switch="${user.status != null ? user.status.name() : ''}">
+                                        <span th:case="'ACTIVE'" class="badge badge-success">Hoạt động</span>
+                                        <span th:case="'BLOCKED'" class="badge badge-secondary">Đã khóa</span>
+                                        <span th:case="'PENDING'" class="badge badge-warning">Chờ xử lý</span>
+                                        <span th:case="*" class="badge badge-light">—</span>
+                                    </th:block>
+                                </td>
+                                <td>
+                                    <th:block th:if="${currentUser?.id != user.id}">
+                                        <form th:action="@{'/admin/users/' + ${user.id} + '/toggle-status'}"
+                                            method="post" style="display: inline-block;">
+                                            <button type="submit" class="btn btn-sm"
+                                                th:classappend="${user.status.name() == 'ACTIVE'} ? 'btn-warning' : 'btn-success'"
+                                                th:text="${user.status.name() == 'ACTIVE'} ? 'Khóa' : 'Mở khóa'"
+                                                onclick="return confirm('Bạn có chắc chắn muốn ' + (this.textContent === 'Khóa' ? 'khóa' : 'mở khóa') + ' tài khoản này?');">
+                                                Khóa/Mở
+                                            </button>
+                                        </form>
+                                    </th:block>
+                                    <th:block th:if="${currentUser?.id == user.id}">
+                                        <span class="text-muted small">
+                                            <i class="ti-lock mr-1"></i>Tài khoản của bạn
+                                        </span>
+                                    </th:block>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a th:href="@{'/admin/users/' + ${user.uid}}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            <i class="ti-eye mr-1"></i>Chi tiết
+                                        </a>
+                                        <a th:href="@{'/admin/users/' + ${user.uid} + '/history'}"
+                                            class="btn btn-sm btn-outline-info ml-1">
+                                            <i class="ti-time mr-1"></i>Lịch sử
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav th:if="${pageResult.totalPages > 1}" aria-label="Phân trang người dùng">
+                    <ul class="pagination justify-content-center mt-3">
+                        <li class="page-item" th:classappend="${pageResult.first} ? ' disabled'">
+                            <a class="page-link"
+                                th:href="@{/admin/users(page=1, size=${pageSize}, q=${query}, role=${selectedRole})}">Đầu</a>
+                        </li>
+                        <li class="page-item" th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
+                            th:classappend="${pageNum == currentPage} ? ' active'">
+                            <a class="page-link"
+                                th:href="@{/admin/users(page=${pageNum}, size=${pageSize}, q=${query}, role=${selectedRole})}"
+                                th:text="${pageNum}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${pageResult.last} ? ' disabled'">
+                            <a class="page-link"
+                                th:href="@{/admin/users(page=${pageResult.totalPages}, size=${pageSize}, q=${query}, role=${selectedRole})}">Cuối</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+    </section>
+</body>
+
+</html>

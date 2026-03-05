@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main}">
+
+<head>
+    <title layout:fragment="title" th:text="'Đơn hàng '">Chi tiết đơn hàng</title>
+</head>
+
+<body>
+    <section layout:fragment="content" class="order-detail-page">
+        <section class="py-5">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="page-title pb-2" th:text="'Đơn hàng'">Chi tiết đơn hàng</h1>
+                    <nav class="breadcrumb fs-6">
+                        <a class="breadcrumb-item nav-link" th:href="@{/}">Home</a>
+                        <a class="breadcrumb-item nav-link" th:href="@{/orders}">Đơn hàng</a>
+                    </nav>
+                </div>
+            </div>
+        </section>
+
+        <section class="order-detail-wrap pb-5">
+            <div class="container">
+                <div th:if="${order}">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="text-muted">
+                            <span>Ngày đặt: </span>
+                            <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2024</span>
+                        </div>
+                        <span class="badge fs-6" th:classappend="${order.status.name() == 'PROCESSING'} ? 'bg-info text-dark' :
+                                          (${order.status.name() == 'SHIPPED'} ? 'bg-primary' :
+                                          (${order.status.name() == 'DELIVERED'} ? 'bg-success' :
+                                          (${order.status.name() == 'CANCELLED'} ? 'bg-danger' : 'bg-secondary')))"
+                            th:text="${order.status.displayName}">Đang xử lý</span>
+                    </div>
+
+                    <div class="row g-5">
+                        <div class="col-lg-8">
+                            <h4 class="pb-4">Sản phẩm đã đặt</h4>
+                            <div class="order-items">
+                                <table class="table">
+                                    <thead class="border-bottom">
+                                        <tr>
+                                            <th>Sản phẩm</th>
+                                            <th class="text-center">SL</th>
+                                            <th class="text-end">Đơn giá</th>
+                                            <th class="text-end">Thành tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item : ${order.items}" class="border-bottom">
+                                            <td>
+                                                <span th:text="${item.productName}">Product Name</span>
+                                            </td>
+                                            <td class="text-center" th:text="${item.quantity}">1</td>
+                                            <td class="text-end"
+                                                th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                                                0 ₫</td>
+                                            <td class="text-end"
+                                                th:text="${#numbers.formatDecimal(item.price.multiply(T(java.math.BigDecimal).valueOf(item.quantity.longValue())), 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                                                0 ₫</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div class="total-price mt-4">
+                                    <table cellspacing="0" class="table">
+                                        <tbody>
+                                            <tr class="subtotal border-top border-bottom pt-2 pb-2 text-uppercase">
+                                                <th>Tạm tính</th>
+                                                <td class="text-end">
+                                                    <span class="price-amount amount"
+                                                        th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0
+                                                        ₫</span>
+                                                </td>
+                                            </tr>
+                                            <tr class="shipping border-bottom pt-2 pb-2 text-uppercase">
+                                                <th>Phí vận chuyển</th>
+                                                <td class="text-end">
+                                                    <span class="price-amount amount text-success">Miễn phí</span>
+                                                </td>
+                                            </tr>
+                                            <tr class="order-total border-bottom pt-2 pb-2 text-uppercase">
+                                                <th>Tổng cộng</th>
+                                                <td class="text-end">
+                                                    <span class="price-amount amount fw-bold"
+                                                        th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0
+                                                        ₫</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <h4 class="pb-4">Thông tin giao hàng</h4>
+                            <div class="billing-details" th:if="${order}">
+                                <p class="mb-2">
+                                    <strong>Người nhận:</strong>
+                                    <span th:text="${order.recipientName}">Tên</span>
+                                </p>
+                                <p class="mb-2">
+                                    <strong>Điện thoại:</strong>
+                                    <span th:text="${order.phoneNumber}">0123456789</span>
+                                </p>
+                                <p class="mb-2">
+                                    <strong>Địa chỉ:</strong>
+                                    <span th:text="${order.addressLine}">123 Đường ABC</span>
+                                </p>
+                                <p class="mb-2">
+                                    <strong>Thành phố:</strong>
+                                    <span th:text="${order.city}">TP.HCM</span>
+                                </p>
+                                <p class="mb-0">
+                                    <strong>Quốc gia:</strong>
+                                    <span th:text="${order.country}">Việt Nam</span>
+                                </p>
+                            </div>
+                            <p th:unless="${order.addressLine}" class="text-muted">
+                                Không có thông tin địa chỉ.
+                            </p>
+
+
+                            <h4 class="pb-4 mt-5">Thanh toán</h4>
+                            <div class="billing-details" th:if="${order}">
+                                <p class="mb-2">
+                                    <strong>Phương thức:</strong>
+                                    <span th:text="${order.paymentMethod.displayName}">COD</span>
+                                </p>
+                                <p class="mb-2">
+                                    <strong>Trạng thái:</strong>
+                                    <span class="badge"
+                                        th:classappend="${order.paymentStatus.name() == 'PENDING'} ? 'bg-warning text-dark' :
+                                                      (${order.paymentStatus.name() == 'COMPLETED'} ? 'bg-success' : 'bg-danger')"
+                                        th:text="${order.paymentStatus.displayName}">Chờ thanh toán</span>
+                                </p>
+                                <p class="mb-0" th:if="${order.transactionId}">
+                                    <strong>Mã giao dịch:</strong>
+                                    <span th:text="${order.transactionId}">TXN123</span>
+                                </p>
+                            </div>
+                            <p th:unless="${order.paymentMethod}" class="text-muted">
+                                Không có thông tin thanh toán.
+                            </p>
+
+
+                            <div class="mt-5">
+                                <a th:href="@{/orders}" class="btn btn-dark btn-lg text-uppercase w-100">
+                                    Quay lại danh sách
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:unless="${order}" class="alert alert-warning">
+                    Không tìm thấy đơn hàng.
+                </div>
+            </div>
+        </section>
+    </section>
+</body>
+
+</html>

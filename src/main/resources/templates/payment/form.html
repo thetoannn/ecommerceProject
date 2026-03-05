@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main}">
+
+<head>
+    <title layout:fragment="title" th:text="${paymentId != null ? 'Chỉnh sửa phương thức' : 'Thêm phương thức mới'}">
+        Thanh toán</title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <!-- Header -->
+        <section class="py-5">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="page-title pb-2"
+                        th:text="${paymentId != null ? 'Chỉnh sửa phương thức' : 'Thêm phương thức mới'}">Thanh toán
+                    </h1>
+                    <nav class="breadcrumb fs-6">
+                        <a class="breadcrumb-item nav-link" th:href="@{/}">Home</a>
+                        <a class="breadcrumb-item nav-link" th:href="@{/profile}">Hồ sơ</a>
+                        <a class="breadcrumb-item nav-link" th:href="@{/payment}">Phương thức thanh toán</a>
+                        <span class="breadcrumb-item active" aria-current="page"
+                            th:text="${paymentId != null ? 'Sửa' : 'Thêm'}">Thêm</span>
+                    </nav>
+                </div>
+            </div>
+        </section>
+
+        <section class="pb-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <form
+                                    th:action="${paymentId != null} ? @{/payment/edit/{id}(id=${paymentId})} : @{/payment/create}"
+                                    th:object="${paymentRequest}" method="post">
+                                    <div class="row">
+                                        <div class="col-md-12 mb-4">
+                                            <label
+                                                class="form-label text-uppercase small text-muted font-weight-bold">Phương
+                                                thức thanh toán <span class="text-danger">*</span></label>
+                                            <div class="row g-3">
+                                                <div th:each="method : ${paymentMethods}" class="col-md-6">
+                                                    <div
+                                                        class="form-check card-radio p-3 border rounded h-100 hvr-shadow">
+                                                        <input class="form-check-input" type="radio"
+                                                            th:field="*{method}" th:id="${'method_' + method}"
+                                                            th:value="${method}" required>
+                                                        <label class="form-check-label w-100"
+                                                            th:for="${'method_' + method}">
+                                                            <span class="d-block fw-bold mb-1"
+                                                                th:text="${method.displayName}">Tên phương thức</span>
+                                                            <span class="small text-muted"
+                                                                th:text="${method.description}">Mô tả</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('method')}"
+                                                th:errors="*{method}"></div>
+                                        </div>
+
+                                        <div class="col-md-12 mb-4" id="accountNumberContainer">
+                                            <label
+                                                class="form-label text-uppercase small text-muted font-weight-bold">Số
+                                                tài khoản / Số thẻ <span class="text-danger">*</span></label>
+                                            <input type="text" th:field="*{accountNumber}" class="form-control"
+                                                id="accountNumber"
+                                                placeholder="Ví dụ: 0123456789 hoặc 4111222233334444">
+                                            <div class="text-danger small mt-1"
+                                                th:if="${#fields.hasErrors('accountNumber')}"
+                                                th:errors="*{accountNumber}"></div>
+                                        </div>
+
+                                        <div class="col-md-12 mb-4">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" th:field="*{default}"
+                                                    id="isDefault">
+                                                <label class="form-check-label small text-muted" for="isDefault">Đặt làm
+                                                    phương thức thanh toán mặc định</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="my-4">
+                                    <div class="d-flex justify-content-end gap-3">
+                                        <a th:href="@{/payment}" class="btn btn-outline-dark px-4">Hủy</a>
+                                        <button type="submit" class="btn btn-dark px-5 py-2">Lưu phương thức</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+
+    <style layout:fragment="style">
+        .card-radio {
+            cursor: pointer;
+            transition: all 0.2s;
+            border-width: 2px !important;
+        }
+
+        .card-radio:hover {
+            border-color: #000 !important;
+        }
+
+        .form-check-input:checked+.form-check-label {
+            color: #000;
+        }
+
+        .form-check-input:checked~.card-radio {
+            border-color: #000 !important;
+            background-color: #f8f9fa;
+        }
+
+        .hvr-shadow {
+            transition-duration: 0.3s;
+            transition-property: box-shadow;
+        }
+
+        .hvr-shadow:hover {
+            box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+
+    <script layout:fragment="pageScripts">
+        document.addEventListener('DOMContentLoaded', function () {
+            const container = document.getElementById('accountNumberContainer');
+            const input = document.getElementById('accountNumber');
+            const radios = document.querySelectorAll('input[name="method"]');
+
+            function toggleAccountNumber() {
+                const selectedMethod = document.querySelector('input[name="method"]:checked');
+                console.log("Method changed to:", selectedMethod ? selectedMethod.value : "none");
+                if (selectedMethod && selectedMethod.value === 'COD') {
+                    container.style.display = 'none';
+                    input.removeAttribute('required');
+                } else {
+                    container.style.display = 'block';
+                    input.setAttribute('required', 'required');
+                }
+            }
+
+            radios.forEach(radio => {
+                radio.addEventListener('change', toggleAccountNumber);
+            });
+
+            toggleAccountNumber();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/main}">
+
+<head>
+    <title layout:fragment="title">Hồ sơ của tôi</title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <section class="py-5">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="page-title pb-2">Hồ sơ của tôi</h1>
+                    <nav class="breadcrumb fs-6">
+                        <a class="breadcrumb-item nav-link" th:href="@{/}">Home</a>
+                        <span class="breadcrumb-item active" aria-current="page">Hồ sơ</span>
+                    </nav>
+                </div>
+            </div>
+        </section>
+
+        <section class="profile-wrap pb-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div th:if="${successMessage}" class="alert alert-success py-2 px-3 small mb-4" role="alert"
+                            th:text="${successMessage}"></div>
+
+                        <div th:if="${!editing}" class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="row">
+                                    <label class="form-label text-uppercase small text-muted">Tên đăng nhập</label>
+                                    <p class="mb-0 fw-semibold" th:text="${#authentication.name}">username</p>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label text-uppercase small text-muted">Họ và tên</label>
+                                    <p class="mb-0" th:text="${currentProfile?.fullName} ?: 'Chưa cập nhật'">
+                                        Chưa cập nhật</p>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label text-uppercase small text-muted">Ngày sinh</label>
+                                    <p class="mb-0"
+                                        th:text="${currentProfile?.dateOfBirth != null} ? ${#temporals.format(currentProfile.dateOfBirth, 'dd/MM/yyyy')} : 'Chưa cập nhật'">
+                                        Chưa cập nhật</p>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label text-uppercase small text-muted">Số điện thoại</label>
+                                    <p class="mb-0" th:text="${currentProfile?.phone} ?: 'Chưa cập nhật'">
+                                        Chưa cập nhật</p>
+                                </div>
+
+                            </div>
+                            <hr class="my-3">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                                <div class="d-flex gap-2">
+                                    <a th:href="@{/orders}"
+                                        class="btn btn-outline-dark d-flex align-items-center gap-2">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                                        </svg>
+                                        <span>Đơn hàng của tôi</span>
+                                    </a>
+                                    <a th:href="@{/address}"
+                                        class="btn btn-outline-dark d-flex align-items-center gap-2">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                            <circle cx="12" cy="10" r="3"></circle>
+                                        </svg>
+                                        <span>Địa chỉ đặt hàng</span>
+                                    </a>
+                                    <a th:href="@{/payment}"
+                                        class="btn btn-outline-dark d-flex align-items-center gap-2">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                                        </svg>
+                                        <span>Thanh toán</span>
+                                    </a>
+                                </div>
+                                <a th:href="@{/profile(edit=true)}" class="btn btn-dark px-4">Chỉnh sửa thông
+                                    tin</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${editing}" class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <form th:action="@{/profile}" th:object="${profileForm}" method="post">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label text-uppercase small text-muted">Tên đăng
+                                            nhập</label>
+                                        <p class="mb-0 fw-semibold" th:text="${#authentication.name}">username</p>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label text-uppercase small text-muted">Họ và tên</label>
+                                        <input type="text" th:field="*{fullName}" class="form-control"
+                                            placeholder="Nhập họ và tên">
+                                        <div class="text-danger small" th:if="${#fields.hasErrors('fullName')}"
+                                            th:errors="*{fullName}"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label text-uppercase small text-muted">Ngày sinh</label>
+                                        <input type="date" th:field="*{dateOfBirth}" class="form-control">
+                                        <div class="text-danger small" th:if="${#fields.hasErrors('dateOfBirth')}"
+                                            th:errors="*{dateOfBirth}"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label text-uppercase small text-muted">Số điện
+                                            thoại</label>
+                                        <input type="text" th:field="*{phone}" class="form-control"
+                                            placeholder="Nhập số điện thoại">
+                                        <div class="text-danger small" th:if="${#fields.hasErrors('phone')}"
+                                            th:errors="*{phone}"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label text-uppercase small text-muted">Địa chỉ</label>
+                                        <input type="text" th:field="*{addressLine}" class="form-control"
+                                            placeholder="Nhập địa chỉ">
+                                        <div class="text-danger small" th:if="${#fields.hasErrors('addressLine')}"
+                                            th:errors="*{addressLine}"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label text-uppercase small text-muted">Thành phố</label>
+                                        <input type="text" th:field="*{city}" class="form-control"
+                                            placeholder="Nhập thành phố">
+                                        <div class="text-danger small" th:if="${#fields.hasErrors('city')}"
+                                            th:errors="*{city}"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label text-uppercase small text-muted">Quốc gia</label>
+                                        <input type="text" th:field="*{country}" class="form-control"
+                                            placeholder="Nhập quốc gia">
+                                        <div class="text-danger small" th:if="${#fields.hasErrors('country')}"
+                                            th:errors="*{country}"></div>
+                                    </div>
+                                </div>
+                                <hr class="my-3">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a th:href="@{/profile}" class="btn btn-outline-dark">Hủy</a>
+                                    <button type="submit" class="btn btn-dark">Lưu thay đổi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+    </section>
+</body>
+
+</html>
